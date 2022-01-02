@@ -6,7 +6,7 @@
 /*   By: cwhis <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/28 19:18:28 by cwhis             #+#    #+#             */
-/*   Updated: 2022/01/02 14:37:47 by cwhis            ###   ########.fr       */
+/*   Updated: 2022/01/02 15:08:28 by cwhis            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 #include <limits>
 #include <cstring>
 #include <iterator>
-#include "Utils.hpp"
+#include "Utility.hpp"
 
 namespace ft {
 
