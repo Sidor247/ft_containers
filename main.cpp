@@ -6,7 +6,7 @@
 /*   By: cwhis <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/27 16:07:59 by cwhis             #+#    #+#             */
-/*   Updated: 2021/12/28 17:30:52 by cwhis            ###   ########.fr       */
+/*   Updated: 2022/01/02 14:42:32 by cwhis            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,22 +127,41 @@
 // 	return (0);
 // }
 
-#include "vector.hpp"
+#include "Vector.hpp"
 #include <iostream>
+#include <vector>
 
 int	main()
 {
-	ft::vector<int> v1(3, 4);
-	ft::vector<int> v2(2, 7);
-	for (size_t i = 0; i < v1.size(); ++i)
-		std::cout << v1[i] << std::endl;
-	for (size_t i = 0; i < v2.size(); ++i)
-		std::cout << v2[i] << std::endl;
-	v1.swap(v2);
-	std::cout << std::endl;
-	for (size_t i = 0; i < v1.size(); ++i)
-		std::cout << v1[i] << std::endl;
-	for (size_t i = 0; i < v2.size(); ++i)
-		std::cout << v2[i] << std::endl;
+	// ft::vector<int> v1(3u, 4);
+	// ft::vector<int> v2(2u, 7);
+	// std::cout << v1.size() << std::endl;
+	// std::cout << v2.size() << std::endl;
+	// for (ft::vector<int>::iterator i = v1.begin(); i != v1.end(); ++i)
+	// 	std::cout << *i << std::endl;
+	// for (ft::vector<int>::iterator i = v2.begin(); i != v2.end(); ++i)
+	// 	std::cout << *i << std::endl;
+	// v1.swap(v2);
+	// std::cout << std::endl;
+	// for (ft::vector<int>::iterator i = v1.begin(); i != v1.end(); ++i)
+	// 	std::cout << *i << std::endl;
+	// for (ft::vector<int>::iterator i = v2.begin(); i != v2.end(); ++i)
+	// 	std::cout << *i << std::endl;
+	// ft::vector<int> v(0, 3);
+	// std::cout << v.capacity() << std::endl;
+	// std::cout << v.size() << std::endl;
+	// std::cout << v.data() << std::endl;
+	// v.push_back(4);
+	// v.push_back(4);
+	// v.push_back(4);
+	// v.push_back(4);
+	// v.push_back(4);
+	// v.push_back(4);
+	// for (ft::vector<int>::iterator it = v.begin(); it != v.end(); ++it)
+	// 	std::cout << *it << std::endl;
+	ft::vector<int> v;
+	for (int i = 0; i < 10; ++i)
+		v.push_back(i);
+	std::cout << *(3u + v.begin()) << std::endl;
 	return (0);
 }
