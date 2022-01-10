@@ -6,7 +6,7 @@
 /*   By: cwhis <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/27 16:07:59 by cwhis             #+#    #+#             */
-/*   Updated: 2022/01/02 14:42:32 by cwhis            ###   ########.fr       */
+/*   Updated: 2022/01/05 00:11:37 by cwhis            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,6 +130,22 @@
 #include "Vector.hpp"
 #include <iostream>
 #include <vector>
+#include <list>
+#include <deque>
+
+//template<typename Integral>
+//void f(Integral val, typename ft::enable_if<ft::is_integral<Integral>::value>::type* = 0)
+//{
+//	(void)val;
+//	std::cout << 1 << std::endl;
+//};
+//
+//template<class T>
+//void f(T val, typename ft::enable_if<!ft::is_integral<T>::value>::type* = 0)
+//{
+//	(void)val;
+//	std::cout << 2 << std::endl;
+//}
 
 int	main()
 {
@@ -159,9 +175,47 @@ int	main()
 	// v.push_back(4);
 	// for (ft::vector<int>::iterator it = v.begin(); it != v.end(); ++it)
 	// 	std::cout << *it << std::endl;
-	ft::vector<int> v;
-	for (int i = 0; i < 10; ++i)
-		v.push_back(i);
-	std::cout << *(3u + v.begin()) << std::endl;
+//	ft::vector<int> v1;
+//	for (int i = 0; i < 10; ++i)
+//		v1.push_back(i);
+//	for (ft::vector<int>::iterator it = v1.begin(); it != v1.end(); ++it)
+//		std::cout << *it << std::endl;
+//	std::cout << std::endl;
+//	ft::vector<int> v(v1.begin(), v1.end() - 3);
+//
+//	int	arr[5] = {0, 1, 2, 3, 4};
+//	int *p = arr;
+	std::vector<int> l;
+	l.push_back(1);
+	l.push_back(2);
+	l.push_back(3);
+	l.push_back(4);
+	l.push_back(5);
+	l.push_back(6);
+	ft::vector<double>	v(l.begin(), l.end());
+	for (ft::vector<double>::reverse_iterator it = v.rbegin(); it != v.rend(); ++it)
+		std::cout << *it << std::endl;
+//	std::istream_iterator<int> it1;
+//	std::istream_iterator<int> it2;
+//
+//	ft::vector<int>	v(it1, it2);
+//	int a = 0;
+//	int* p = &a;
+//	f(a);
+//	f(p);
 	return (0);
 }
+
+//class A {};
+//
+//enum E : int {};
+//int main()
+//{
+//	std::cout << std::boolalpha;
+//	std::cout << ft::is_integral<A>::value << '\n';
+//	std::cout << ft::is_integral<E>::value << '\n';
+//	std::cout << ft::is_integral<float>::value << '\n';
+//	std::cout << ft::is_integral<int>::value << '\n';
+//	std::cout << ft::is_integral<const int>::value << '\n';
+//	std::cout << ft::is_integral<bool>::value << '\n';
+//}
