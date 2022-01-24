@@ -1,7 +1,7 @@
 CC=clang++
-CFLAGS=-Wall -Wextra -Werror -std=c++98 -g3
+CFLAGS=-Wall -Wextra -Werror -std=c++98 -g3 -fsanitize=address -I .
 NAME=tests
-HEADS=Algorithm.hpp Pair.hpp ReverseIterator.hpp TypeTraits.hpp Vector.hpp
+HEADS=algorithm.hpp pair.hpp reverse_iterator.hpp type_traits.hpp vector.hpp
 SRCS=main.cpp
 OBJS=$(SRCS:.cpp=.o)
 
