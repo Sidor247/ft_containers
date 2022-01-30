@@ -35,15 +35,14 @@ namespace ft
 		pointer			_arr;
 
 		template<bool IsConst>
-		class _common_iterator
+		class _common_iterator : public std::iterator<
+			std::random_access_iterator_tag,
+			T,
+			std::ptrdiff_t,
+			typename ft::conditional<IsConst, const T*, T*>::type,
+			typename ft::conditional<IsConst, const T&, T&>::type>
 		{
 		public:
-			typedef std::ptrdiff_t										difference_type;
-			typedef T													value_type;
-			typedef typename ft::conditional<IsConst,const T*,T*>::type	pointer;
-			typedef typename ft::conditional<IsConst,const T&,T&>::type	reference;
-			typedef std::random_access_iterator_tag						iterator_category;
-
 			_common_iterator(): _ptr(nullptr) {}
 			_common_iterator(pointer ptr): _ptr(ptr) {}
 			_common_iterator(const _common_iterator& src): _ptr(src._ptr) {}
@@ -58,7 +57,7 @@ namespace ft
 			reference	operator*() const
 			{ return *_ptr; }
 
-			pointer	operator->() const
+			pointer		operator->() const
 			{ return _ptr; }
 
 			reference	operator[](difference_type n) const
@@ -197,23 +196,15 @@ namespace ft
 			_alloc.deallocate(_arr, _cap);
 		}
 
-		template<class InputIt>
-		void _reserve_iter_impl(InputIt, InputIt, std::input_iterator_tag) {}
-
 		template<class ForwardIt>
 		void _reserve_iter_impl(ForwardIt first, ForwardIt last, std::forward_iterator_tag)
 		{ reserve(std::distance(first, last)); }
 
-		template<class Iter>
-		void _reserve_impl(Iter first, typename ft::enable_if<!ft::is_pointer<Iter>::value, Iter>::type last)
-		{ _reserve_iter_impl(first, last, typename ft::iterator_traits<Iter>::iterator_category()); }
-
-		template<class Pointer>
-		void _reserve_impl(Pointer first, typename ft::enable_if<ft::is_pointer<Pointer>::value, Pointer>::type last)
-		{ reserve(last - first); }
+		template<class InputIt>
+		void _reserve_iter_impl(InputIt, InputIt, std::input_iterator_tag) {}
 
 		template< class ForwardIt >
-		void	_insert_iterator_impl(_common_iterator<false> pos, ForwardIt first, ForwardIt last, std::forward_iterator_tag)
+		void _insert_iter_impl(_common_iterator<false> pos, ForwardIt first, ForwardIt last, std::forward_iterator_tag)
 		{
 			difference_type insert_index = pos - begin();
 			size_type count = std::distance(first, last);
@@ -248,10 +239,10 @@ namespace ft
 		}
 
 		template< class InputIt >
-		void	_insert_iterator_impl(_common_iterator<false> pos, InputIt first, InputIt last, std::input_iterator_tag)
+		void _insert_iter_impl(_common_iterator<false> pos, InputIt first, InputIt last, std::input_iterator_tag)
 		{
 			vector	to_insert(first, last, _alloc);
-			_insert_iterator_impl(pos, to_insert.begin(), to_insert.end(),
+			_insert_iter_impl(pos, to_insert.begin(), to_insert.end(),
 								  typename ft::iterator_traits<iterator>::iterator_category());
 		}
 
@@ -290,7 +281,7 @@ namespace ft
 				_cap(0u),
 				_arr(nullptr)
 		{
-			_reserve_impl(first, last);
+			_reserve_iter_impl(first, last, typename ft::iterator_traits<InputIt>::iterator_category());
 			try
 			{
 				for (InputIt it = first; it != last; ++it)
@@ -319,7 +310,7 @@ namespace ft
 			_alloc(other._alloc),
 			_arr(_alloc_and_copy(other)) {}
 
-		~vector()
+	   ~vector()
 		{ _destroy_and_dealloc(); }
 
 		vector& operator=( const vector& other )
