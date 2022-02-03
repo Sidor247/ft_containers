@@ -3,12 +3,11 @@
 
 #include <memory>
 #include <limits>
-#include <cstring>
 #include <iterator>
 #include <iostream>
 #include "algorithm.hpp"
 #include "type_traits.hpp"
-#include "reverse_Iterator.hpp"
+#include "reverse_iterator.hpp"
 
 namespace ft
 {
@@ -113,28 +112,25 @@ namespace ft
 				return copy -= rhs;
 			}
 
-	friend	bool operator==	(const _common_iterator& lhs,
-							 const _common_iterator& rhs)
+			operator _common_iterator<true>()
+			{ return _common_iterator<true>(_ptr); }
+
+	friend	bool operator==(const _common_iterator& lhs, const _common_iterator& rhs)
 			{ return lhs._ptr == rhs._ptr; }
 
-	friend	bool operator!=	(const _common_iterator& lhs,
-							 const _common_iterator& rhs)
+	friend	bool operator!=(const _common_iterator& lhs, const _common_iterator& rhs)
 			{ return lhs._ptr != rhs._ptr; }
 
-	friend	bool operator<	(const _common_iterator& lhs,
-							 const _common_iterator& rhs)
+	friend	bool operator< (const _common_iterator& lhs, const _common_iterator& rhs)
 			{ return rhs - lhs > 0; }
 
-	friend	bool operator>	(const _common_iterator& lhs,
-							 const _common_iterator& rhs)
+	friend	bool operator> (const _common_iterator& lhs, const _common_iterator& rhs)
 			{ return rhs < lhs; }
 
-	friend	bool operator>=	(const _common_iterator& lhs,
-							 const _common_iterator& rhs)
+	friend	bool operator>=(const _common_iterator& lhs, const _common_iterator& rhs)
 			{ return !(lhs < rhs); }
 
-	friend	bool operator<=	(const _common_iterator& lhs,
-							 const _common_iterator& rhs)
+	friend	bool operator<=(const _common_iterator& lhs, const _common_iterator& rhs)
 			{ return !(lhs > rhs); }
 
 	friend	_common_iterator	operator+(difference_type lhs, _common_iterator rhs)
@@ -146,6 +142,19 @@ namespace ft
 		private:
 			pointer _ptr;
 		};
+
+		void _destroy_range(T* start, T* end)
+		{
+			for (T* ptr = start; ptr != end; ++ptr)
+				_alloc.destroy(ptr);
+		}
+
+		void _destroy_and_dealloc()
+		{
+			if (!_arr) return;
+			_destroy_range(_arr, _arr + _size);
+			_alloc.deallocate(_arr, _cap);
+		}
 
 		T*	_alloc_and_init(size_type count, const T& value)
 		{
@@ -160,40 +169,38 @@ namespace ft
 			}
 			catch (...)
 			{
-				for (size_type j = 0; j < i; ++j)
-					_alloc.destroy(new_arr + j);
+				_destroy_range(new_arr, new_arr + i);
 				_alloc.deallocate(new_arr, count);
 				throw;
 			}
 			return new_arr;
 		}
 
-		T*	_alloc_and_copy(const vector& src)
+		T*	_alloc_and_copy(T* arr)
 		{
-			if (!src._arr)
+			if (!arr)
 				return nullptr;
-			Allocator alloc = src.get_allocator();
-			T *new_arr = alloc.allocate(src._cap);
+			T *new_arr = _alloc.allocate(_cap);
 			size_type i = 0;
 			try {
-				for (; i < src._size; ++i)
-					alloc.construct(new_arr + i, src._arr[i]);
+				for (; i < _size; ++i)
+					_alloc.construct(new_arr + i, arr[i]);
 			}
-			catch (...) {
-				for (size_type j = 0; j < i; ++i)
-					alloc.destroy(new_arr + j);
-				alloc.deallocate(new_arr, src._cap);
+			catch (...)
+			{
+				_destroy_range(new_arr, new_arr + i);
+				_alloc.deallocate(new_arr, _cap);
 				throw;
 			}
 			return new_arr;
 		}
 
-		void _destroy_and_dealloc()
+		void _basic_exception_handler()
 		{
-			if (!_arr) return;
-			for (size_type i = 0; i < _size; ++i)
-				_alloc.destroy(_arr + i);
 			_alloc.deallocate(_arr, _cap);
+			_size = 0;
+			_cap = 0;
+			_arr = nullptr;
 		}
 
 		template<class ForwardIt>
@@ -211,9 +218,8 @@ namespace ft
 			if (_size + count > _cap)
 				reserve(_size + count);
 			T* insert_ptr	= _arr + insert_index;
-			T* back_ptr		= _arr + _size + count - 1;
 			T* left_ptr		= _arr + _size;
-			T* right_ptr	= back_ptr;
+			T* right_ptr	= _arr + _size + count - 1;
 			try
 			{
 				for (; left_ptr > insert_ptr; --left_ptr, --right_ptr)
@@ -226,14 +232,9 @@ namespace ft
 			}
 			catch (...)
 			{
-				for (T* ptr = _arr; ptr < left_ptr; ++ptr)
-					_alloc.destroy(ptr);
-				for (T* ptr = right_ptr + 1; ptr <= back_ptr; ++ptr)
-					_alloc.destroy(ptr);
-				_alloc.deallocate(_arr, _cap);
-				_size = 0;
-				_cap = 0;
-				_arr = nullptr;
+				_destroy_range(_arr, left_ptr);
+				_destroy_range(right_ptr, _arr + _size + count);
+				_basic_exception_handler();
 			}
 			_size += count;
 		}
@@ -241,7 +242,7 @@ namespace ft
 		template< class InputIt >
 		void _insert_iter_impl(_common_iterator<false> pos, InputIt first, InputIt last, std::input_iterator_tag)
 		{
-			vector	to_insert(first, last, _alloc);
+			vector	to_insert(first, last);
 			_insert_iter_impl(pos, to_insert.begin(), to_insert.end(),
 								  typename ft::iterator_traits<iterator>::iterator_category());
 		}
@@ -287,7 +288,6 @@ namespace ft
 				for (InputIt it = first; it != last; ++it)
 				{ push_back(*it); }
 			}
-			//?
 			catch (...)
 			{
 				_destroy_and_dealloc();
@@ -305,10 +305,10 @@ namespace ft
 				_arr(_alloc_and_init(static_cast<size_type>(first), static_cast<value_type>(last))) {}
 
 		vector( const vector& other ):
+			_alloc(other._alloc),
 			_size(other._size),
 			_cap(other._cap),
-			_alloc(other._alloc),
-			_arr(_alloc_and_copy(other)) {}
+			_arr(_alloc_and_copy(other._arr)) {}
 
 	   ~vector()
 		{ _destroy_and_dealloc(); }
@@ -317,18 +317,17 @@ namespace ft
 		{
 			if (this == &other)
 				return *this;
-			swap(vector(other));
+			T* new_arr = _alloc_and_copy(other._arr);
+			_destroy_and_dealloc();
+			_alloc = other._alloc;
+			_size = other._size;
+			_cap = other._cap;
+			_arr = new_arr;
 			return *this;
 		}
 
 		void assign( size_type count, const T& value )
-		{
-			T* new_arr = _alloc_and_init(count, value);
-			_destroy_and_dealloc();
-			_arr = new_arr;
-			_size = count;
-			_cap = count;
-		}
+		{ swap(vector(count, value, _alloc)); }
 
 		template< class InputIt >
 		void assign( InputIt first, InputIt last )
@@ -423,8 +422,7 @@ namespace ft
 			}
 			catch (...)
 			{
-				for (size_type j = 0; j < i; ++j)
-					_alloc.destroy(new_arr + j);
+				_destroy_range(new_arr, new_arr + i);
 				_alloc.deallocate(new_arr, new_cap);
 				throw;
 			}
@@ -438,8 +436,7 @@ namespace ft
 
 		void clear()
 		{
-			for (size_type i = 0; i < _size; ++i)
-				_alloc.destroy(_arr + i);
+			_destroy_range(_arr, _arr + _size);
 			_size = 0;
 		}
 
@@ -466,14 +463,9 @@ namespace ft
 			}
 			catch (...)
 			{
-				for (T* destroy_ptr = _arr; destroy_ptr < tmp_ptr; ++destroy_ptr)
-					_alloc.destroy(destroy_ptr);
-				for (T* destroy_ptr = _arr + _size; destroy_ptr > tmp_ptr; --destroy_ptr)
-					_alloc.destroy(destroy_ptr);
-				_alloc.deallocate(_arr, _cap);
-				_size = 0;
-				_cap = 0;
-				_arr = nullptr;
+				_destroy_range(_arr, tmp_ptr);
+				_destroy_range(tmp_ptr + 1, _arr + _size + 1);
+				_basic_exception_handler();
 				throw;
 			}
 			++_size;
@@ -486,9 +478,8 @@ namespace ft
 			if (_size + count > _cap)
 				reserve(_size + count);
 			T* insert_ptr	= _arr + insert_index;
-			T* back_ptr		= _arr + _size + count - 1;
-			T* first_ptr		= _arr + _size;
-			T* last_ptr	= back_ptr;
+			T* first_ptr	= _arr + _size;
+			T* last_ptr		= _arr + _size + count - 1;
 			try
 			{
 				for (; first_ptr > insert_ptr; --first_ptr, --last_ptr)
@@ -501,14 +492,9 @@ namespace ft
 			}
 			catch (...)
 			{
-				for (T* ptr = _arr; ptr < first_ptr; ++ptr)
-					_alloc.destroy(ptr);
-				for (T* ptr = last_ptr + 1; ptr <= back_ptr; ++ptr)
-					_alloc.destroy(ptr);
-				_alloc.deallocate(_arr, _cap);
-				_size = 0;
-				_cap = 0;
-				_arr = nullptr;
+				_destroy_range(_arr, first_ptr);
+				_destroy_range(last_ptr + 1, _arr + _size + count);
+				_basic_exception_handler();
 				throw;
 			}
 			_size += count;
@@ -543,14 +529,9 @@ namespace ft
 			}
 			catch (...)
 			{
-				for (T* ptr = _arr; ptr < erase_ptr; ++ptr)
-					_alloc.destroy(ptr);
-				for (T* ptr = erase_ptr + 1; ptr <= back_ptr; ++ptr)
-					_alloc.destroy(ptr);
-				_alloc.deallocate(_arr, _cap);
-				_size = 0;
-				_cap = 0;
-				_arr = nullptr;
+				_destroy_range(_arr, erase_ptr);
+				_destroy_range(erase_ptr + 1, _arr + _size);
+				_basic_exception_handler();
 				throw;
 			}
 			return pos;
@@ -562,8 +543,7 @@ namespace ft
 			T* first_ptr = first - begin() + _arr;
 			T* last_ptr = last - begin() + _arr;
 			T* back_ptr = _arr + _size - 1;
-			for (T* ptr = first_ptr; ptr < last_ptr; ++ptr)
-				_alloc.destroy(ptr);
+			_destroy_range(first_ptr, last_ptr);
 			try
 			{
 				for (; last_ptr <= back_ptr; ++last_ptr, ++first_ptr)
@@ -574,14 +554,9 @@ namespace ft
 			}
 			catch (...)
 			{
-				for (T* ptr = _arr; ptr < first_ptr; ++ptr)
-					_alloc.destroy(ptr);
-				for (T* ptr = last_ptr; ptr <= back_ptr; ++ptr)
-					_alloc.destroy(ptr);
-				_alloc.deallocate(_arr, _cap);
-				_size = 0;
-				_cap = 0;
-				_arr = nullptr;
+				_destroy_range(_arr, first_ptr);
+				_destroy_range(last_ptr, _arr + _size);
+				_basic_exception_handler();
 				throw;
 			}
 			_size -= count;
@@ -606,8 +581,7 @@ namespace ft
 				for (size_type i = _size; i < count; ++i)
 					_alloc.construct(_arr + i, value);
 			if (count < _size)
-				for (size_type i = count; i < _size; ++i)
-					_alloc.destroy(_arr + i);
+				_destroy_range(_arr + count, _arr + _size);
 			_size = count;
 		}
 

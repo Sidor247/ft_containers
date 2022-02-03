@@ -216,7 +216,6 @@ int	main()
 	std::cout << "reversed" << std::endl;
 	for (ft::vector<double>::reverse_iterator it = v.rbegin(); it != v.rend(); ++it)
 		std::cout << *it << std::endl;
-
 //	ft::vector<int>	v;
 //	v.insert(v.begin(), 1);
 //	v.reserve(0);
