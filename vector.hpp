@@ -317,12 +317,7 @@ namespace ft
 		{
 			if (this == &other)
 				return *this;
-			T* new_arr = _alloc_and_copy(other._arr);
-			_destroy_and_dealloc();
-			_alloc = other._alloc;
-			_size = other._size;
-			_cap = other._cap;
-			_arr = new_arr;
+			swap(vector(other));
 			return *this;
 		}
 

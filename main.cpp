@@ -165,8 +165,61 @@
 //	{ std::cout << "Destuctor" << std::endl; }
 //};
 
+struct node
+{
+	bool		is_red;
+	node*		parent;
+	node*		left;
+	node*		right;
+	std::string key;
+	
+	node(): is_red(false), parent(nullptr), left(nullptr), right(nullptr), key(std::string()) {};
+	
+	bool is_nil(const _node& node)
+	{ return !(node.is_red || node.parent || node.left || node.right || node.right); }
+};
+
+struct tree
+{
+	node	*root;
+	
+	tree(): root(new node());
+	
+	node*	find(const std::string& key)
+	{
+		node* tmp = root;
+		while (!tmp->is_nil())
+		{
+			if (key == tmp->key)
+				return &tmp;
+			if (key < tmp->key)
+				tmp = tmp->left;
+			else
+				tmp = tmp->right;
+		}
+		return tmp;
+	}
+	
+	void insert(std::string key)
+	{
+		node* place = find(key);
+		if (!place->is_nil())
+			return;
+		
+		
+		
+	}
+	
+	
+};
+
+struct
+
 int	main()
 {
+	node root;
+	root.is_red = false;
+	
 	// ft::vector<int> v1(3u, 4);
 	// ft::vector<int> v2(2u, 7);
 	// std::cout << v1.size() << std::endl;
@@ -201,21 +254,22 @@ int	main()
 //	std::cout << std::endl;
 //	ft::vector<int> v(v1.begin(), v1.end() - 3);
 //
-	int	arr[5] = {0, 1, 2, 3, 4};
-	int *p = arr;
-	ft::vector<int> l;
-	l.push_back(1);
-	l.push_back(2);
-	l.push_back(3);
-	l.push_back(4);
-	l.push_back(5);
-	l.push_back(6);
-	ft::vector<double>	v(p, p + 5);
-	for (ft::vector<double>::iterator it = v.begin(); it != v.end(); ++it)
-		std::cout << *it << std::endl;
-	std::cout << "reversed" << std::endl;
-	for (ft::vector<double>::reverse_iterator it = v.rbegin(); it != v.rend(); ++it)
-		std::cout << *it << std::endl;
+//	int	arr[5] = {0, 1, 2, 3, 4};
+//	int *p = arr;
+//	ft::vector<int> l;
+//	l.push_back(1);
+//	l.push_back(2);
+//	l.push_back(3);
+//	l.push_back(4);
+//	l.push_back(5);
+//	l.push_back(6);
+//	ft::vector<double>	v(p, p + 5);
+//	for (ft::vector<double>::iterator it = v.begin(); it != v.end(); ++it)
+//		std::cout << *it << std::endl;
+//	std::cout << "reversed" << std::endl;
+//	for (ft::vector<double>::reverse_iterator it = v.rbegin(); it != v.rend(); ++it)
+//		std::cout << *it << std::endl;
+//	std::swap(v, v);
 //	ft::vector<int>	v;
 //	v.insert(v.begin(), 1);
 //	v.reserve(0);
