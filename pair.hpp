@@ -21,12 +21,7 @@ namespace ft
 		pair( const T1& x, const T2& y ):
 			first(x),
 			second(y) {}
-	
-		template< class U1, class U2 >
-		pair( const pair<U1, U2>& p ):
-			first(p.first),
-			second(p.second) {}
-	
+
 		pair( const pair& p ):
 			first(p.first),
 			second(p.second) {}
@@ -39,9 +34,6 @@ namespace ft
 			second = other.second;
 			return *this;
 		}
-	
-friend	pair make_pair( T1 t, T2 u )
-		{ return pair(t, u); }
 
 friend	bool operator==( const pair& lhs, const pair& rhs )
 		{ return lhs.first == rhs.first && lhs.second == rhs.second; }
@@ -51,11 +43,11 @@ friend	bool operator!=( const pair& lhs, const pair& rhs )
 
 friend	bool operator<( const pair& lhs, const pair& rhs )
 		{
-			if lhs.first < rhs.first
+			if (lhs.first < rhs.first)
 				return true;
-			else if lhs.first < rhs.first
+			else if (lhs.first < rhs.first)
 				return false;
-			if lhs.second < rhs.second
+			if (lhs.second < rhs.second)
 				return true;
 			else
 				return false;
@@ -70,6 +62,12 @@ friend	bool operator>( const pair& lhs, const pair& rhs )
 friend	bool operator>=( const pair& lhs, const pair& rhs )
 		{ return !(lhs < rhs); }
 	};
+
+	template< class T1, class T2 >
+	ft::pair<T1,T2> make_pair( T1 t, T2 u )
+	{
+		return pair<T1, T2>(t, u);
+	}
 
 }
 

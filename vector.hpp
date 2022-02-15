@@ -37,10 +37,11 @@ namespace ft
 		class _common_iterator : public std::iterator<
 			std::random_access_iterator_tag,
 			T,
-			std::ptrdiff_t,
 			typename ft::conditional<IsConst, const T*, T*>::type,
 			typename ft::conditional<IsConst, const T&, T&>::type>
 		{
+			pointer _ptr;
+
 		public:
 			_common_iterator(): _ptr(nullptr) {}
 			_common_iterator(pointer ptr): _ptr(ptr) {}
@@ -138,9 +139,6 @@ namespace ft
 
 	friend	difference_type		operator-(const _common_iterator& lhs, const _common_iterator& rhs)
 			{ return lhs._ptr - rhs._ptr; }
-
-		private:
-			pointer _ptr;
 		};
 
 		void _destroy_range(T* start, T* end)
@@ -317,7 +315,12 @@ namespace ft
 		{
 			if (this == &other)
 				return *this;
-			swap(vector(other));
+			T* newarr = _alloc_and_copy(other._arr);
+			_destroy_and_dealloc();
+			_alloc = other._alloc;
+			_size = other._size;
+			_cap = other._cap;
+			_arr = newarr;
 			return *this;
 		}
 

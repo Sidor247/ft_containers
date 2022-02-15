@@ -128,6 +128,8 @@
 // }
 
 #include "vector.hpp"
+#include "stack.hpp"
+#include "map.hpp"
 #include <iostream>
 #include <vector>
 #include <list>
@@ -165,60 +167,58 @@
 //	{ std::cout << "Destuctor" << std::endl; }
 //};
 
-struct node
-{
-	bool		is_red;
-	node*		parent;
-	node*		left;
-	node*		right;
-	std::string key;
-	
-	node(): is_red(false), parent(nullptr), left(nullptr), right(nullptr), key(std::string()) {};
-	
-	bool is_nil(const _node& node)
-	{ return !(node.is_red || node.parent || node.left || node.right || node.right); }
-};
-
-struct tree
-{
-	node	*root;
-	
-	tree(): root(new node());
-	
-	node*	find(const std::string& key)
-	{
-		node* tmp = root;
-		while (!tmp->is_nil())
-		{
-			if (key == tmp->key)
-				return &tmp;
-			if (key < tmp->key)
-				tmp = tmp->left;
-			else
-				tmp = tmp->right;
-		}
-		return tmp;
-	}
-	
-	void insert(std::string key)
-	{
-		node* place = find(key);
-		if (!place->is_nil())
-			return;
-		
-		
-		
-	}
-	
-	
-};
-
-struct
+//struct node
+//{
+//	bool		is_red;
+//	node*		parent;
+//	node*		left;
+//	node*		right;
+//	std::string key;
+//
+//	node(): is_red(false), parent(nullptr), left(nullptr), right(nullptr), key(std::string()) {};
+//
+//	bool is_nil(const _node& node)
+//	{ return !(node.is_red || node.parent || node.left || node.right || node.right); }
+//};
+//
+//struct tree
+//{
+//	node	*root;
+//
+//	tree(): root(new node());
+//
+//	node*	find(const std::string& key)
+//	{
+//		node* tmp = root;
+//		while (!tmp->is_nil())
+//		{
+//			if (key == tmp->key)
+//				return &tmp;
+//			if (key < tmp->key)
+//				tmp = tmp->left;
+//			else
+//				tmp = tmp->right;
+//		}
+//		return tmp;
+//	}
+//
+//	void insert(std::string key)
+//	{
+//		node* place = find(key);
+//		if (!place->is_nil())
+//			return;
+//
+//
+//
+//	}
+//
+//
+//};
 
 int	main()
 {
-	node root;
-	root.is_red = false;
+//	node root;
+//	root.is_red = false;
 	
 	// ft::vector<int> v1(3u, 4);
 	// ft::vector<int> v2(2u, 7);
@@ -313,5 +313,13 @@ int	main()
 //	for (std::vector<int>::iterator it = v.begin(); it != v.end(); ++it)
 //		std::cout << *it << std::endl;
 //	std::cout << *pos << std::endl;
+
+	ft::map<int, std::string> map;
+	ft::pair<const int, std::string> p1(0, "0"), p2(1,"1"), p3(2, "2"), p4(-1, "-1");
+	map.insert(p1);
+	map.insert(p2);
+	map.insert(p3);
+	map.insert(p4);
+	ft::map<int, std::string> map2 = map;
 	return (0);
 }
