@@ -6,7 +6,12 @@
 namespace ft
 {
 	template< class Iter >
-	class reverse_iterator
+	class reverse_iterator : public std::iterator<
+            typename ft::iterator_traits<Iter>::iterator_category,
+            typename ft::iterator_traits<Iter>::value_type,
+            typename ft::iterator_traits<Iter>::difference_type,
+            typename ft::iterator_traits<Iter>::pointer,
+            typename ft::iterator_traits<Iter>::reference>
 	{
 	public:
 		typedef Iter 													iterator_type;
@@ -16,7 +21,7 @@ namespace ft
 		typedef	typename ft::iterator_traits<Iter>::pointer 			pointer;
 		typedef	typename ft::iterator_traits<Iter>::reference 			reference;
 
-		reverse_iterator(): current(Iter()) {}
+		reverse_iterator(): current(iterator_type()) {}
 		explicit	reverse_iterator(iterator_type it): current(it) {}
 		reverse_iterator(const reverse_iterator& rev_it): current(rev_it.current) {}
 
@@ -26,7 +31,7 @@ namespace ft
 		reference operator*() const
 		{ return current.operator*(); }
 
-		reference operator->() const
+		pointer operator->() const
 		{ return current.operator->(); }
 
 		reference operator[](difference_type n) const

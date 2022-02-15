@@ -225,12 +225,12 @@ namespace ft
 				typename ft::conditional<IsConst, const_reference, reference>::type>
 		{
 			_node* _ptr;
-			_node* _root;
+			_node* _prev;
 
-		public:
-			_common_iterator(): _ptr(nullptr), _root(nullptr) {}
-			_common_iterator(pointer ptr): _ptr(ptr), _root(ptr) {}
-			_common_iterator(const _common_iterator& src): _ptr(src._ptr), _root(src._root) {}
+        public:
+			_common_iterator(): _ptr(nullptr), _prev(nullptr) {}
+			_common_iterator(_node* ptr): _ptr(ptr), _prev(nullptr) {}
+			_common_iterator(const _common_iterator& src): _ptr(src._ptr), _prev(src._prev) {}
 
 			reference	operator*() const
 			{ return *_ptr->value; }
@@ -240,12 +240,12 @@ namespace ft
 
 			_common_iterator&	operator++()
 			{
-				if (_ptr == _root && _ptr->right != _node::nil())
+				if (_ptr->right != _prev && _ptr->right != _node::nil())
 					_ptr = _ptr->right->advanced_left();
 				else
 				{
+                    _prev = _ptr;
 					_ptr = _ptr->parent;
-					_root = _ptr;
 				}
 				return *this;
 			}
@@ -256,6 +256,31 @@ namespace ft
 				operator++();
 				return copy;
 			}
+
+            _common_iterator&	operator--()
+            {
+                if (_ptr->left != _prev && _ptr->left != _node::nil())
+                    _ptr = _ptr->left->advanced_right();
+                else
+                {
+                    _prev = _ptr;
+                    _ptr = _ptr->parent;
+                }
+                return *this;
+            }
+
+            _common_iterator operator--(int)
+            {
+                _common_iterator copy(*this);
+                operator--();
+                return copy;
+            }
+
+    friend	bool operator==(const _common_iterator& lhs, const _common_iterator& rhs)
+            { return lhs._prev == rhs._prev; }
+
+    friend	bool operator!=(const _common_iterator& lhs, const _common_iterator& rhs)
+            { return lhs._prev != rhs._prev; }
 		};
 
 		void _destroy_and_dealloc(_node* root)
@@ -388,7 +413,28 @@ namespace ft
 		{ return _alloc; }
 
 		iterator begin()
-		{ iterator(_first); }
+		{ return iterator(_first); }
+
+        const_iterator begin() const
+        { return const_iterator(_first); }
+
+        iterator end()
+        { return ++iterator(_last); }
+
+        const_iterator end() const
+        { return ++const_iterator(_last); }
+
+        reverse_iterator rbegin()
+        { return reverse_iterator(_last); }
+
+        const_reverse_iterator rbegin() const
+        { return const_reverse_iterator(_last); }
+
+        reverse_iterator rend()
+        { return ++reverse_iterator(_first); }
+
+        const_reverse_iterator rend() const
+        { return ++const_reverse_iterator(_last); }
 
 		bool empty() const
 		{ return !_size; }
@@ -411,21 +457,21 @@ namespace ft
 			_node* tmp = _root;
 			_node* parent = nullptr;
 			_node** child;
-			if (tmp != nullptr)
-			{
-				while (tmp != _node::nil())
-				{
-					parent = tmp;
-					if (_val_comp(val, *tmp->value))
-						child = &tmp->left;
-					else
-						child = &tmp->right;
-					tmp = *child;
-				}
-			}
+            while (tmp != _node::nil())
+            {
+                parent = tmp;
+                if (_val_comp(val, *tmp->value))
+                    child = &tmp->left;
+                else
+                    child = &tmp->right;
+                tmp = *child;
+            }
 			tmp = _alloc_and_init_node(parent, val);
 			tmp->insert_case1();
-			_root ? *child : _root = tmp;
+			if (_root == _node::nil())
+                _root = tmp;
+            else
+                *child = tmp;
 			_first = _root->advanced_left();
 			_last = _root->advanced_right();
 			++_size;

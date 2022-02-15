@@ -314,12 +314,21 @@ int	main()
 //		std::cout << *it << std::endl;
 //	std::cout << *pos << std::endl;
 
+//    ft::vector<ft::pair<int, int> > v;
+//    v.push_back(ft::pair<int, int>(1, 1));
+//    for (ft::vector<ft::pair<int, int> >::reverse_iterator it = v.rbegin(); it != v.rend(); ++it)
+//        std::cout << it->first << std::endl;
 	ft::map<int, std::string> map;
 	ft::pair<const int, std::string> p1(0, "0"), p2(1,"1"), p3(2, "2"), p4(-1, "-1");
 	map.insert(p1);
-	map.insert(p2);
 	map.insert(p3);
+    map.insert(p2);
 	map.insert(p4);
 	ft::map<int, std::string> map2 = map;
+    for (ft::map<int, std::string>::iterator it = ++map2.begin(); it != --map2.end(); ++it)
+        std::cout << it->first << ' ' << it->second << std::endl;
+    std::cout << std::endl;
+    for (ft::map<int, std::string>::reverse_iterator it = ++map2.rbegin(); it != --map2.rend(); ++it)
+        std::cout << (*it).first << ' ' << (*it).second << std::endl;
 	return (0);
 }
