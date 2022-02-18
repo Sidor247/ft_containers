@@ -77,8 +77,13 @@ namespace ft
 				right(nil()),
 				value(src.value) {}
 
-			bool operator()()
-			{ return this != nil(); }
+            _node*  advanced_up()
+            {
+                _node* ptr = this;
+                while (ptr->parent)
+                    ptr = ptr->parent;
+                return ptr;
+            }
 
 			_node*	advanced_left()
 			{
@@ -107,11 +112,11 @@ namespace ft
 			{
 				_node* g = grandparent();
 				if (!g)
-					return _node::nil();
+					return nil();
 				if (parent == g->left)
-					return g->left;
-				else
 					return g->right;
+				else
+					return g->left;
 			}
 
 			void rotate_left()
@@ -183,16 +188,18 @@ namespace ft
 			void insert_case4()
 			{
 				_node* g = grandparent();
+                _node* ptr = this;
 				if (this == parent->right && parent == g->left)
 				{
 					parent->rotate_left();
-					left->insert_case5();
+                    ptr = left;
 				}
-				else if (this == parent->left && parent == g->left)
+				else if (this == parent->left && parent == g->right)
 				{
 					parent->rotate_right();
-					right->insert_case5();
-				}
+                    ptr = right;
+                }
+                ptr->insert_case5();
 			}
 
 			void insert_case5()
@@ -242,12 +249,15 @@ namespace ft
 			_common_iterator&	operator++()
 			{
 				if (_ptr->right != _prev && _ptr->right != _node::nil())
-					_ptr = _ptr->right->advanced_left();
-				else
-				{
+                {
                     _prev = _ptr;
-					_ptr = _ptr->parent;
-				}
+                    _ptr = _ptr->right->advanced_left();
+                }
+				else
+                {
+                    _prev = _ptr;
+                    _ptr = _ptr->parent;
+                }
 				return *this;
 			}
 
@@ -261,11 +271,14 @@ namespace ft
             _common_iterator&	operator--()
             {
                 if (_ptr->left != _prev && _ptr->left != _node::nil())
-                    _ptr = _ptr->left->advanced_right();
+                {
+                    _ptr = _prev;
+                    _prev = _prev->left->advanced_right();
+                }
                 else
                 {
-                    _prev = _ptr;
-                    _ptr = _ptr->parent;
+                    _ptr = _prev;
+                    _prev = _prev->parent;
                 }
                 return *this;
             }
@@ -460,7 +473,7 @@ namespace ft
 		{
 			_node* tmp = _root;
 			_node* parent = nullptr;
-			_node** child;
+			_node** child = nullptr;
             while (tmp != _node::nil())
             {
 				if (tmp->value->second == value.second)
@@ -473,11 +486,10 @@ namespace ft
                 tmp = *child;
             }
 			tmp = _alloc_and_init_node(parent, true, value);
-			tmp->insert_case1();
-			if (_root == _node::nil())
-                _root = tmp;
-            else
+            if (child)
                 *child = tmp;
+			tmp->insert_case1();
+            _root = tmp->advanced_up();
 			_first = _root->advanced_left();
 			_last = _root->advanced_right();
 			++_size;
