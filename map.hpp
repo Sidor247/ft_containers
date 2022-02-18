@@ -66,8 +66,8 @@ namespace ft
 				return &nil;
 			};
 
-			_node(_node* parent):
-				is_red(true),
+			_node(_node* parent, bool is_red):
+				is_red(is_red),
 				parent(parent) {}
 
 			_node(const _node& src):
@@ -221,6 +221,7 @@ namespace ft
 		class _common_iterator : public std::iterator<
 				std::bidirectional_iterator_tag,
 				value_type,
+				std::ptrdiff_t,
 				typename ft::conditional<IsConst, const_pointer, pointer>::type,
 				typename ft::conditional<IsConst, const_reference, reference>::type>
 		{
@@ -276,6 +277,9 @@ namespace ft
                 return copy;
             }
 
+			operator _common_iterator<true>()
+			{ return _common_iterator<true>(_ptr); }
+
     friend	bool operator==(const _common_iterator& lhs, const _common_iterator& rhs)
             { return lhs._prev == rhs._prev; }
 
@@ -295,17 +299,17 @@ namespace ft
 			_node_alloc.deallocate(root, 1u);
 		}
 
-		_node*	_alloc_and_init_node(_node* parent, const value_type& src)
+		_node*	_alloc_and_init_node(_node* parent, bool is_red, const value_type& value)
 		{
 			_node* newnode = _node_alloc.allocate(1u);
 			try
 			{
-				_node_alloc.construct(newnode, _node(parent));
+				_node_alloc.construct(newnode, _node(parent, is_red));
 				try
 				{
 					newnode->value = _alloc.allocate(1u);
 					try
-					{ _alloc.construct(newnode->value, src); }
+					{ _alloc.construct(newnode->value, value); }
 					catch (...)
 					{ _alloc.deallocate(newnode->value, 1u); throw; }
 				}
@@ -317,16 +321,16 @@ namespace ft
 			return newnode;
 		}
 
-		_node*	_alloc_and_copy(_node* root)
+		_node*	_alloc_and_copy(_node* parent, _node* root)
 		{
 			if (root == _node::nil())
 				return _node::nil();
-			_node* newnode = _alloc_and_init_node(nullptr, *root->value);
+			_node* newnode = _alloc_and_init_node(parent, root->is_red, *root->value);
 			try
 			{
-				newnode->left  = _alloc_and_copy(root->left);
+				newnode->left  = _alloc_and_copy(newnode,root->left);
 				try
-				{ newnode->right = _alloc_and_copy(root->right); }
+				{ newnode->right = _alloc_and_copy(newnode, root->right); }
 				catch (...)
 				{ _destroy_and_dealloc(newnode->left); throw; }
 			}
@@ -364,7 +368,7 @@ namespace ft
 					  const Allocator& alloc = Allocator() ):
 					  _val_comp(comp),
 					  _alloc(alloc),
-					  _node_alloc(_node_alloc_type(alloc)),
+					  _node_alloc(alloc),
 					  _size(size_type()),
 					  _root(_node::nil()),
 					  _first(_node::nil()),
@@ -383,11 +387,11 @@ namespace ft
 			 _last(_root->advanced_right()) {}
 
 		map( const map& other ):
-			_val_comp(value_compare(other._val_comp.comp)),
+			_val_comp(other._val_comp.comp),
 			_alloc(other._alloc),
 			_node_alloc(other._node_alloc),
 			_size(other._size),
-			_root(_alloc_and_copy(other._root)),
+			_root(_alloc_and_copy(nullptr, other._root)),
 			_first(_root->advanced_left()),
 			_last(_root->advanced_right()) {}
 
@@ -452,21 +456,23 @@ namespace ft
 			_size = 0;
 		}
 
-		void insert(const value_type& val)
+		ft::pair<iterator, bool> insert(const value_type& value)
 		{
 			_node* tmp = _root;
 			_node* parent = nullptr;
 			_node** child;
             while (tmp != _node::nil())
             {
+				if (tmp->value->second == value.second)
+					return ft::make_pair(iterator(tmp), false);
                 parent = tmp;
-                if (_val_comp(val, *tmp->value))
+                if (_val_comp(value, *tmp->value))
                     child = &tmp->left;
                 else
                     child = &tmp->right;
                 tmp = *child;
             }
-			tmp = _alloc_and_init_node(parent, val);
+			tmp = _alloc_and_init_node(parent, true, value);
 			tmp->insert_case1();
 			if (_root == _node::nil())
                 _root = tmp;
@@ -475,20 +481,49 @@ namespace ft
 			_first = _root->advanced_left();
 			_last = _root->advanced_right();
 			++_size;
+			return ft::make_pair(iterator(tmp), true);
 		}
 
-//		iterator insert(iterator position, const value_type& val)
+//		iterator insert(iterator hint, const value_type& value)
 //		{
 //
 //		}
-//
+
 //		template <class InputIterator>
-//		void insert (InputIterator first, InputIterator last)
-//		{}
+//		void insert(InputIterator first, InputIterator last)
+//		{
+//
+//		}
 
-		iterator find( const Key& key );
+		iterator find( const Key& key )
+		{
+			_node* tmp = _root;
+			while (tmp != _node::nil())
+			{
+				if (key == tmp->value->first)
+					return iterator(tmp);
+				if (_val_comp.comp(key, tmp->value->first))
+					tmp = tmp->left;
+				else
+					tmp = tmp->right;
+			}
+			return end();
+		}
 
-		const_iterator find( const Key& key ) const;
+		const_iterator find( const Key& key ) const
+		{
+			_node* tmp = _root;
+			while (tmp != _node::nil())
+			{
+				if (key == tmp->value->first)
+					return const_iterator(tmp);
+				if (_val_comp.comp(key, tmp->value->first))
+					tmp = tmp->left;
+				else
+					tmp = tmp->right;
+			}
+			return end();
+		}
 
 		value_compare value_comp() const
 		{ return _val_comp; }

@@ -133,7 +133,7 @@
 #include <iostream>
 #include <vector>
 #include <list>
-#include <deque>
+#include <map>
 
 //template<typename Integral>
 //void f(Integral val, typename ft::enable_if<ft::is_integral<Integral>::value>::type* = 0)
@@ -325,10 +325,15 @@ int	main()
     map.insert(p2);
 	map.insert(p4);
 	ft::map<int, std::string> map2 = map;
-    for (ft::map<int, std::string>::iterator it = ++map2.begin(); it != --map2.end(); ++it)
+	ft::map<int, std::string>::iterator it = map2.begin();
+    for (; it != map2.end(); ++it)
         std::cout << it->first << ' ' << it->second << std::endl;
     std::cout << std::endl;
-    for (ft::map<int, std::string>::reverse_iterator it = ++map2.rbegin(); it != --map2.rend(); ++it)
-        std::cout << (*it).first << ' ' << (*it).second << std::endl;
+	--it;
+	for (; it != map2.begin(); --it)
+		std::cout << it->first << ' ' << it->second << std::endl;
+	std::cout << it->first << ' ' << it->second << std::endl;
+//    for (ft::map<int, std::string>::reverse_iterator it = map2.rbegin(); it != map2.rend(); ++it)
+//        std::cout << it->first << ' ' << it->second << std::endl;
 	return (0);
 }

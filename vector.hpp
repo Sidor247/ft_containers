@@ -37,6 +37,7 @@ namespace ft
 		class _common_iterator : public std::iterator<
 			std::random_access_iterator_tag,
 			T,
+			std::ptrdiff_t,
 			typename ft::conditional<IsConst, const T*, T*>::type,
 			typename ft::conditional<IsConst, const T&, T&>::type>
 		{
@@ -54,13 +55,13 @@ namespace ft
 				return *this;
 			}
 
-			reference	operator*() const
+			reference	operator*()
 			{ return *_ptr; }
 
-			pointer		operator->() const
+			pointer		operator->()
 			{ return _ptr; }
 
-			reference	operator[](difference_type n) const
+			reference	operator[](difference_type n)
 			{ return *(*this + n); }
 
 			_common_iterator&	operator++()
