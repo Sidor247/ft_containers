@@ -235,9 +235,9 @@ namespace ft
 			_node* _ptr;
 			_node* _prev;
 
-        public:
+		public:
 			_common_iterator(): _ptr(nullptr), _prev(nullptr) {}
-			_common_iterator(_node* ptr): _ptr(ptr), _prev(nullptr) {}
+			_common_iterator(_node* ptr, _node* prev): _ptr(ptr), _prev(prev) {}
 			_common_iterator(const _common_iterator& src): _ptr(src._ptr), _prev(src._prev) {}
 
 			reference	operator*() const
@@ -248,16 +248,22 @@ namespace ft
 
 			_common_iterator&	operator++()
 			{
-				if (_ptr->right != _prev && _ptr->right != _node::nil())
-                {
-                    _prev = _ptr;
-                    _ptr = _ptr->right->advanced_left();
-                }
+				if (_ptr)
+				{
+					_prev = _ptr;
+					if (_ptr->right != _node::nil())
+						_ptr = _ptr->right->advanced_left();
+					else {
+						_node *tmp = _ptr->parent;
+						while (tmp && _ptr == tmp->right) {
+							_ptr = tmp;
+							tmp = tmp->parent;
+						}
+						_ptr = tmp;
+					}
+				}
 				else
-                {
-                    _prev = _ptr;
-                    _ptr = _ptr->parent;
-                }
+					_ptr = _prev;
 				return *this;
 			}
 
@@ -268,36 +274,42 @@ namespace ft
 				return copy;
 			}
 
-            _common_iterator&	operator--()
-            {
-                if (_ptr->left != _prev && _ptr->left != _node::nil())
-                {
-                    _ptr = _prev;
-                    _prev = _prev->left->advanced_right();
-                }
-                else
-                {
-                    _ptr = _prev;
-                    _prev = _prev->parent;
-                }
-                return *this;
-            }
+			_common_iterator&	operator--()
+			{
+				if (_ptr)
+				{
+					_prev = _ptr;
+					if (_ptr->left != _node::nil())
+						_ptr = _ptr->left->advanced_right();
+					else {
+						_node *tmp = _ptr->parent;
+						while (tmp && _ptr == tmp->left) {
+							_ptr = tmp;
+							tmp = tmp->parent;
+						}
+						_ptr = tmp;
+					}
+				}
+				else
+					_ptr = _prev;
+				return *this;
+			}
 
-            _common_iterator operator--(int)
-            {
-                _common_iterator copy(*this);
-                operator--();
-                return copy;
-            }
+			_common_iterator operator--(int)
+			{
+				_common_iterator copy(*this);
+				operator--();
+				return copy;
+			}
 
 			operator _common_iterator<true>()
 			{ return _common_iterator<true>(_ptr); }
 
-    friend	bool operator==(const _common_iterator& lhs, const _common_iterator& rhs)
-            { return lhs._prev == rhs._prev; }
+			friend	bool operator==(const _common_iterator& lhs, const _common_iterator& rhs)
+			{ return lhs._ptr == rhs._ptr; }
 
-    friend	bool operator!=(const _common_iterator& lhs, const _common_iterator& rhs)
-            { return lhs._prev != rhs._prev; }
+			friend	bool operator!=(const _common_iterator& lhs, const _common_iterator& rhs)
+			{ return lhs._ptr != rhs._ptr; }
 		};
 
 		void _destroy_and_dealloc(_node* root)
@@ -429,29 +441,48 @@ namespace ft
 		allocator_type get_allocator() const
 		{ return _alloc; }
 
+		T& at( const Key& key )
+		{
+			const_iterator it = find(key);
+			if (it == end())
+				throw std::out_of_range("out_of_range");
+			return it->second;
+		}
+
+		const T& at( const Key& key ) const
+		{
+			iterator it = find(key);
+			if (it == end())
+				throw std::out_of_range("out_of_range");
+			return it->second;
+		}
+
+		T& operator[]( const Key& key )
+		{ return insert(value_type(key, T())).first->second; }
+
 		iterator begin()
-		{ return iterator(_first); }
+		{ return iterator(_first != _node::nil() ?  _first : nullptr, nullptr); }
 
         const_iterator begin() const
-        { return const_iterator(_first); }
+        { return const_iterator(_first != _node::nil() ?  _first : nullptr, nullptr); }
 
         iterator end()
-        { return ++iterator(_last); }
+        { return iterator(nullptr, _last != _node::nil() ?  _last : nullptr); }
 
         const_iterator end() const
-        { return ++const_iterator(_last); }
+        { return const_iterator(nullptr, _last != _node::nil() ?  _last : nullptr); }
 
         reverse_iterator rbegin()
-        { return reverse_iterator(_last); }
+        { return reverse_iterator(iterator(_last != _node::nil() ?  _last : nullptr, nullptr)); }
 
         const_reverse_iterator rbegin() const
-        { return const_reverse_iterator(_last); }
+        { return const_reverse_iterator(const_iterator(_last != _node::nil() ?  _last : nullptr, nullptr)); }
 
         reverse_iterator rend()
-        { return ++reverse_iterator(_first); }
+        { return reverse_iterator(iterator(nullptr, _first != _node::nil() ?  _first : nullptr)); }
 
         const_reverse_iterator rend() const
-        { return ++const_reverse_iterator(_last); }
+        { return const_reverse_iterator(const_iterator(nullptr, _first != _node::nil() ?  _first : nullptr)); }
 
 		bool empty() const
 		{ return !_size; }
@@ -477,7 +508,7 @@ namespace ft
             while (tmp != _node::nil())
             {
 				if (tmp->value->second == value.second)
-					return ft::make_pair(iterator(tmp), false);
+					return ft::make_pair(iterator(tmp, nullptr), false);
                 parent = tmp;
                 if (_val_comp(value, *tmp->value))
                     child = &tmp->left;
@@ -493,7 +524,7 @@ namespace ft
 			_first = _root->advanced_left();
 			_last = _root->advanced_right();
 			++_size;
-			return ft::make_pair(iterator(tmp), true);
+			return ft::make_pair(iterator(tmp, nullptr), true);
 		}
 
 //		iterator insert(iterator hint, const value_type& value)
@@ -506,6 +537,17 @@ namespace ft
 //		{
 //
 //		}
+
+//		void erase( iterator pos );
+//
+//		void erase( iterator first, iterator last );
+//
+//		size_type erase( const Key& key );
+//
+//		void swap( map& other );
+
+		size_type count( const Key& key ) const
+		{ return find(key) == end() ? 0 : 1; }
 
 		iterator find( const Key& key )
 		{
@@ -536,6 +578,18 @@ namespace ft
 			}
 			return end();
 		}
+
+//		ft::pair<iterator,iterator> equal_range( const Key& key );
+//
+//		ft::pair<const_iterator,const_iterator> equal_range( const Key& key ) const;
+//
+//		iterator lower_bound( const Key& key );
+//
+//		const_iterator lower_bound( const Key& key ) const;
+//
+//		iterator upper_bound( const Key& key );
+//
+//		const_iterator upper_bound( const Key& key ) const;
 
 		value_compare value_comp() const
 		{ return _val_comp; }

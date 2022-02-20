@@ -318,14 +318,14 @@ int	main()
 //    v.push_back(ft::pair<int, int>(1, 1));
 //    for (ft::vector<ft::pair<int, int> >::reverse_iterator it = v.rbegin(); it != v.rend(); ++it)
 //        std::cout << it->first << std::endl;
-	std::map<int, std::string> map;
-    std::pair<const int, std::string> p1(0, "0"), p2(1,"1"), p3(2, "2"), p4(-1, "-1");
-	map.insert(p1);
-	map.insert(p3);
-    map.insert(p2);
-	map.insert(p4);
-    std::map<int, std::string> map2 = map;
-    std::map<int, std::string>::iterator it = map2.begin();
+	ft::map<int, int> map;
+	for (int i = 0; i < 8; ++i)
+	{
+		int num = rand() % 100;
+		map[num] = num;
+	}
+	ft::map<int, int> map2 = map;
+	ft::map<int, int>::iterator it = map2.begin();
     for (; it != map2.end(); ++it)
         std::cout << it->first << ' ' << it->second << std::endl;
     std::cout << std::endl;
@@ -333,6 +333,9 @@ int	main()
 	for (; it != map2.begin(); --it)
 		std::cout << it->first << ' ' << it->second << std::endl;
 	std::cout << it->first << ' ' << it->second << std::endl;
+	std::cout << std::endl;
+	for (; it != map2.end(); ++it)
+		std::cout << it->first << ' ' << it->second << std::endl;
 //    for (ft::map<int, std::string>::reverse_iterator it = map2.rbegin(); it != map2.rend(); ++it)
 //        std::cout << it->first << ' ' << it->second << std::endl;
 	return (0);
