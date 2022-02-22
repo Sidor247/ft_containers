@@ -325,7 +325,7 @@ int	main()
 		map[num] = num;
 	}
 	ft::map<int, int> map2 = map;
-	ft::map<int, int>::iterator it = map2.begin();
+	ft::map<int, int>::iterator it = map2.upper_bound(50);
     for (; it != map2.end(); ++it)
         std::cout << it->first << ' ' << it->second << std::endl;
     std::cout << std::endl;

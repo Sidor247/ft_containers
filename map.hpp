@@ -579,17 +579,85 @@ namespace ft
 			return end();
 		}
 
-//		ft::pair<iterator,iterator> equal_range( const Key& key );
+		ft::pair<iterator,iterator> equal_range( const Key& key )
+		{ return ft::make_pair(lower_bound(key), upper_bound(key)); }
 //
-//		ft::pair<const_iterator,const_iterator> equal_range( const Key& key ) const;
+		ft::pair<const_iterator,const_iterator> equal_range( const Key& key ) const
+		{ return ft::make_pair(lower_bound(key), upper_bound(key)); }
 //
-//		iterator lower_bound( const Key& key );
+		iterator lower_bound( const Key& key )
+		{
+			_node* tmp = _root;
+			_node* prev = nullptr;
+			while (tmp != _node::nil())
+			{
+				if (key == tmp->value->first)
+					return iterator(tmp, nullptr);
+				if (_val_comp.comp(key, tmp->value->first))
+				{
+					prev = tmp;
+					tmp = tmp->left;
+				}
+				else
+					tmp = tmp->right;
+			}
+			return prev && _val_comp.comp(key, prev->value->first) ? iterator(prev, nullptr) : end();
+		}
 //
-//		const_iterator lower_bound( const Key& key ) const;
-//
-//		iterator upper_bound( const Key& key );
-//
-//		const_iterator upper_bound( const Key& key ) const;
+		const_iterator lower_bound( const Key& key ) const
+		{
+			_node* tmp = _root;
+			_node* prev = nullptr;
+			while (tmp != _node::nil())
+			{
+				if (key == tmp->value->first)
+					return const_iterator(tmp, nullptr);
+				if (_val_comp.comp(key, tmp->value->first))
+				{
+					prev = tmp;
+					tmp = tmp->left;
+				}
+				else
+					tmp = tmp->right;
+			}
+			return prev && _val_comp.comp(key, prev->value->first) ? const_iterator(prev, nullptr) : end();
+		}
+
+		iterator upper_bound( const Key& key )
+		{
+			_node* tmp = _root;
+			_node* prev = nullptr;
+			while (tmp != _node::nil())
+			{
+				if (_val_comp.comp(key, tmp->value->first))
+				{
+					prev = tmp;
+					tmp = tmp->left;
+				}
+				else
+					tmp = tmp->right;
+			}
+			return prev && _val_comp.comp(key, prev->value->first) ? iterator(prev, nullptr) : end();
+		}
+
+		const_iterator upper_bound( const Key& key ) const
+		{
+			_node* tmp = _root;
+			_node* prev = nullptr;
+			while (tmp != _node::nil())
+			{
+				if (key == tmp->value->first)
+					return iterator(tmp, nullptr);
+				if (_val_comp.comp(key, tmp->value->first))
+				{
+					prev = tmp;
+					tmp = tmp->left;
+				}
+				else
+					tmp = tmp->right;
+			}
+			return prev && !_val_comp.comp(key, prev->value->first) ? iterator(prev, nullptr) : end();
+		}
 
 		value_compare value_comp() const
 		{ return _val_comp; }
