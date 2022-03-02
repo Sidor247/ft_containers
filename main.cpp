@@ -340,3 +340,47 @@ int	main()
 //        std::cout << it->first << ' ' << it->second << std::endl;
 	return (0);
 }
+
+//findNumbers() {
+//	cv::UMat sourseImage;
+//	cv::UMat gray; cv::cvtColor(sourseImage, gray, CV_BGR2GRAY);
+//	equalizeHist(gray, gray);
+//	bilateralFilter(gray, gray, 3, 45, 45);
+//	std::vector<cv::Rect> plates;
+//	//Нахождение областей номеров с помощью каскада Хаара
+//	 cascadePlate.detectMultiScale(gray, plates,1.1,10,CV_HAAR_DO_CANNY_PRUN ING,cv::Size(50, 15), cv::Size(500, 150));
+//	for(auto& p : plates) {
+////выделение части изображения с номером
+//		findLetters(imagePart);
+//	}
+//}
+//findLetters(imagePart)
+//{
+////применение фильтров для улучшения качества изображения
+//		cv::UMat cannyOutput, smothed, srcThreshold;
+//		auto clahe = cv::createCLAHE(2.0, cv::Size(8, 8)); clahe->apply(imagePart, imagePart);
+//		threshold(imagePart,srcThreshold,0,255,CV_THRESH_BINARY,CV_THRESH_OTSU);
+//		medianBlur(srcThreshold, srcThreshold, 3);
+//		cv::blur(srcThreshold, srcThreshold, cv::Size(3,3));
+//		cv::Canny(srcThreshold, cannyOutput, 66, 133, 3);
+//		std::vector<std::vector<cv::Point>> rectContours;
+//		cv::findContours(cannyOutput, rectContours, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE); //сортировка контуров по размеру
+//		std::sort(rectContours.begin(),
+//		std::vector<cv::Point> &second)
+//		{
+//			return cv::contourArea(first) >
+//				   cv::contourArea(second); });
+//// вычисление угла angle на который повернута область номера
+//		(rectContours[0])
+//		...
+//		rotateImage(srcThreshold, angle); cv::Canny(srcThreshold, cannyOutput, 66,
+//		133, 3); cv::findContours(cannyOutput,
+//		rectContours, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE);
+//		for(auto& c : contours)
+//		{
+////если размер области соответствует
+//			размеру номера, то применить распознавание символа в области c помощью TesseractOCR recognizeChar(charPart);
+//		}}
+//rectContours.end(),
+//[](std::vector<cv::Point>
+//		&first,

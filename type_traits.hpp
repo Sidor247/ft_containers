@@ -73,6 +73,7 @@ namespace ft
 	template<> struct is_integral_base<int>:		true_type {};
 	template<> struct is_integral_base<long>: 		true_type {};
 	template<> struct is_integral_base<long long>:	true_type {};
+
 	template<typename T>
 	struct is_integral: is_integral_base<typename remove_cv<T>::type>::type {};
 }

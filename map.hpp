@@ -66,6 +66,9 @@ namespace ft
 				return &nil;
 			};
 
+			bool is_nil()
+			{ return this == nil(); }
+
 			_node(_node* parent, bool is_red):
 				is_red(is_red),
 				parent(parent) {}
@@ -90,7 +93,7 @@ namespace ft
 				if (this == nil())
 					return nil();
 				_node* ptr = this;
-				while (ptr->left != nil())
+				while (!ptr->left->is_nil())
 					ptr = ptr->left;
 				return ptr;
 			}
@@ -100,7 +103,7 @@ namespace ft
 				if (this == nil())
 					return nil();
 				_node* ptr = this;
-				while (ptr->right != nil())
+				while (!ptr->right->is_nil())
 					ptr = ptr->right;
 				return ptr;
 			}
@@ -119,100 +122,117 @@ namespace ft
 					return g->left;
 			}
 
-			void rotate_left()
+			_node*	sibling()
 			{
-				_node* pivot = right;
-				pivot->parent = parent;
-				if (parent)
-				{
-					if (parent->left == this)
-						parent->left = pivot;
-					else
-						parent->right = pivot;
-				}
-				right = pivot->left;
-				if (pivot->left != nil())
-					pivot->left->parent = this;
-				parent = pivot;
-				pivot->left = this;
-			}
-
-			void rotate_right()
-			{
-				_node* pivot = left;
-				pivot->parent = parent;
-				if (parent)
-				{
-					if (parent->left == this)
-						parent->left = pivot;
-					else
-						parent->right = pivot;
-				}
-				left = pivot->right;
-				if (pivot->right != nil())
-					pivot->right->parent = this;
-				parent = pivot;
-				pivot->right = this;
-			}
-
-			void insert_case1()
-			{
-				if (!parent)
-					is_red = false;
+				if (this == parent->left)
+					return parent->right;
 				else
-					insert_case2();
-			}
-
-			void insert_case2()
-			{
-				if (parent->is_red)
-					insert_case3();
-			}
-
-			void insert_case3()
-			{
-				_node* u = uncle();
-				_node* g;
-				if (u != nil() && u->is_red)
-				{
-					parent->is_red = false;
-					u->is_red = false;
-					g = grandparent();
-					g->is_red = true;
-					g->insert_case1();
-				}
-				else
-					insert_case4();
-			}
-
-			void insert_case4()
-			{
-				_node* g = grandparent();
-                _node* ptr = this;
-				if (this == parent->right && parent == g->left)
-				{
-					parent->rotate_left();
-                    ptr = left;
-				}
-				else if (this == parent->left && parent == g->right)
-				{
-					parent->rotate_right();
-                    ptr = right;
-                }
-                ptr->insert_case5();
-			}
-
-			void insert_case5()
-			{
-				_node* g = grandparent();
-				parent->is_red = false;
-				g->is_red = true;
-				if (this == parent->left && parent == g->left)
-					g->rotate_right();
-				else
-					g->rotate_left();
+					return parent->left;
 			}
 		};
+
+		void rotate_left(_node* n)
+		{
+			_node* pivot = n->right;
+			pivot->parent = n->parent;
+			if (n->parent)
+			{
+				if (n->parent->left == this)
+					n->parent->left = pivot;
+				else
+					n->parent->right = pivot;
+			}
+			n->right = pivot->left;
+			if (!pivot->left->is_nil())
+				pivot->left->parent = this;
+			n->parent = pivot;
+			pivot->left = this;
+		}
+
+		void rotate_right(_node* n)
+		{
+			_node* pivot = n->left;
+			pivot->parent = n->parent;
+			if (n->parent)
+			{
+				if (n->parent->left == this)
+					n->parent->left = pivot;
+				else
+					n->parent->right = pivot;
+			}
+			n->left = pivot->right;
+			if (pivot->right != _node::nil())
+				pivot->right->parent = this;
+			n->parent = pivot;
+			pivot->right = this;
+		}
+
+		void insert_case1(_node* n)
+		{
+			if (!parent)
+				is_red = false;
+			else
+				insert_case2();
+		}
+
+		void insert_case2()
+		{
+			if (parent->is_red)
+				insert_case3();
+		}
+
+		void insert_case3()
+		{
+			_node* u = uncle();
+			_node* g;
+			if (u != nil() && u->is_red)
+			{
+				parent->is_red = false;
+				u->is_red = false;
+				g = grandparent();
+				g->is_red = true;
+				g->insert_case1();
+			}
+			else
+				insert_case4();
+		}
+
+		void insert_case4()
+		{
+			_node* g = grandparent();
+			_node* ptr = this;
+			if (this == parent->right && parent == g->left)
+			{
+				parent->rotate_left();
+				ptr = left;
+			}
+			else if (this == parent->left && parent == g->right)
+			{
+				parent->rotate_right();
+				ptr = right;
+			}
+			ptr->insert_case5();
+		}
+
+		void insert_case5()
+		{
+			_node* g = grandparent();
+			parent->is_red = false;
+			g->is_red = true;
+			if (this == parent->left && parent == g->left)
+				g->rotate_right();
+			else
+				g->rotate_left();
+		}
+
+		void replace_node(_node* child) {
+			child->parent = parent;
+			if (this == parent->left) {
+				parent->left = child;
+			} else {
+				parent->right = child;
+			}
+		}
 
 		typedef typename Allocator::template rebind<_node>::other	_node_alloc_type;
 
@@ -232,6 +252,9 @@ namespace ft
 				typename ft::conditional<IsConst, const_pointer, pointer>::type,
 				typename ft::conditional<IsConst, const_reference, reference>::type>
 		{
+			typedef	typename ft::iterator_traits<_common_iterator>::pointer 	pointer;
+			typedef	typename ft::iterator_traits<_common_iterator>::reference 	reference;
+
 			_node* _ptr;
 			_node* _prev;
 
@@ -239,6 +262,15 @@ namespace ft
 			_common_iterator(): _ptr(nullptr), _prev(nullptr) {}
 			_common_iterator(_node* ptr, _node* prev): _ptr(ptr), _prev(prev) {}
 			_common_iterator(const _common_iterator& src): _ptr(src._ptr), _prev(src._prev) {}
+
+			_common_iterator&	operator=(const _common_iterator& src)
+			{
+				if (this == &src)
+					return *this;
+				_ptr = src._ptr;
+				_prev = src._prev;
+				return *this;
+			}
 
 			reference	operator*() const
 			{ return *_ptr->value; }
@@ -303,7 +335,7 @@ namespace ft
 			}
 
 			operator _common_iterator<true>()
-			{ return _common_iterator<true>(_ptr); }
+			{ return _common_iterator<true>(_ptr, _prev); }
 
 			friend	bool operator==(const _common_iterator& lhs, const _common_iterator& rhs)
 			{ return lhs._ptr == rhs._ptr; }
@@ -312,16 +344,21 @@ namespace ft
 			{ return lhs._ptr != rhs._ptr; }
 		};
 
+		void _destroy_and_dealloc_node(_node* n)
+		{
+			_alloc.destroy(n->value);
+			_alloc.deallocate(n->value, 1u);
+			_node_alloc.destroy(n);
+			_node_alloc.deallocate(n, 1u);
+		}
+
 		void _destroy_and_dealloc(_node* root)
 		{
 			if (root == _node::nil())
 				return;
 			_destroy_and_dealloc(root->left);
 			_destroy_and_dealloc(root->right);
-			_alloc.destroy(root->value);
-			_alloc.deallocate(root->value, 1u);
-			_node_alloc.destroy(root);
-			_node_alloc.deallocate(root, 1u);
+			_destroy_and_dealloc_node(root);
 		}
 
 		_node*	_alloc_and_init_node(_node* parent, bool is_red, const value_type& value)
@@ -360,7 +397,7 @@ namespace ft
 				{ _destroy_and_dealloc(newnode->left); throw; }
 			}
 			catch (...)
-			{ _destroy_and_dealloc(newnode); }
+			{ _destroy_and_dealloc(newnode); throw; }
 			if (newnode->left != _node::nil())
 				newnode->left->parent = newnode;
 			if (newnode->right != _node::nil())
@@ -376,7 +413,7 @@ namespace ft
 
 	public:
 		typedef _common_iterator<false>					iterator;
-		typedef	_common_iterator<false> 				const_iterator;
+		typedef	_common_iterator<true> 					const_iterator;
 		typedef	ft::reverse_iterator<iterator> 			reverse_iterator;
 		typedef	ft::reverse_iterator<const_iterator> 	const_reverse_iterator;
 
@@ -527,10 +564,10 @@ namespace ft
 			return ft::make_pair(iterator(tmp, nullptr), true);
 		}
 
-//		iterator insert(iterator hint, const value_type& value)
-//		{
-//
-//		}
+		iterator insert(iterator hint, const value_type& value)
+		{
+
+		}
 
 //		template <class InputIterator>
 //		void insert(InputIterator first, InputIterator last)
@@ -603,7 +640,7 @@ namespace ft
 			}
 			return prev && _val_comp.comp(key, prev->value->first) ? iterator(prev, nullptr) : end();
 		}
-//
+
 		const_iterator lower_bound( const Key& key ) const
 		{
 			_node* tmp = _root;
@@ -647,7 +684,7 @@ namespace ft
 			while (tmp != _node::nil())
 			{
 				if (key == tmp->value->first)
-					return iterator(tmp, nullptr);
+					return const_iterator(tmp, nullptr);
 				if (_val_comp.comp(key, tmp->value->first))
 				{
 					prev = tmp;
@@ -656,7 +693,7 @@ namespace ft
 				else
 					tmp = tmp->right;
 			}
-			return prev && !_val_comp.comp(key, prev->value->first) ? iterator(prev, nullptr) : end();
+			return prev && !_val_comp.comp(key, prev->value->first) ? const_iterator(prev, nullptr) : end();
 		}
 
 		value_compare value_comp() const
