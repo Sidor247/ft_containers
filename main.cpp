@@ -319,13 +319,14 @@ int	main()
 //    for (ft::vector<ft::pair<int, int> >::reverse_iterator it = v.rbegin(); it != v.rend(); ++it)
 //        std::cout << it->first << std::endl;
 	ft::map<int, int> map;
-	for (int i = 0; i < 8; ++i)
+	for (int i = 0; i < 3; ++i)
 	{
 		int num = rand() % 100;
 		map[num] = num;
 	}
+    map.erase(49);
 	ft::map<int, int> map2 = map;
-	ft::map<int, int>::iterator it = map2.upper_bound(50);
+	ft::map<int, int>::iterator it = map2.begin();
     for (; it != map2.end(); ++it)
         std::cout << it->first << ' ' << it->second << std::endl;
     std::cout << std::endl;
@@ -336,9 +337,10 @@ int	main()
 	std::cout << std::endl;
 	for (; it != map2.end(); ++it)
 		std::cout << it->first << ' ' << it->second << std::endl;
-//    for (ft::map<int, std::string>::reverse_iterator it = map2.rbegin(); it != map2.rend(); ++it)
-//        std::cout << it->first << ' ' << it->second << std::endl;
-	return (0);
+    std::cout << std::endl;
+    for (ft::map<int, int>::reverse_iterator it1 = map2.rbegin(); it1 != map2.rend(); ++it1)
+        std::cout << it1->first << ' ' << it1->second << std::endl;
+	return 0;
 }
 
 //findNumbers() {

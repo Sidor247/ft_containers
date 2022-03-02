@@ -131,108 +131,230 @@ namespace ft
 			}
 		};
 
-		void rotate_left(_node* n)
+		void _rotate_left(_node* n)
 		{
 			_node* pivot = n->right;
 			pivot->parent = n->parent;
 			if (n->parent)
 			{
-				if (n->parent->left == this)
+				if (n->parent->left == n)
 					n->parent->left = pivot;
 				else
 					n->parent->right = pivot;
 			}
+            else
+                _root = pivot;
 			n->right = pivot->left;
 			if (!pivot->left->is_nil())
-				pivot->left->parent = this;
+				pivot->left->parent = n;
 			n->parent = pivot;
-			pivot->left = this;
+			pivot->left = n;
 		}
 
-		void rotate_right(_node* n)
+		void _rotate_right(_node* n)
 		{
 			_node* pivot = n->left;
 			pivot->parent = n->parent;
 			if (n->parent)
 			{
-				if (n->parent->left == this)
+				if (n->parent->left == n)
 					n->parent->left = pivot;
 				else
 					n->parent->right = pivot;
 			}
+            else
+                _root = pivot;
 			n->left = pivot->right;
-			if (pivot->right != _node::nil())
-				pivot->right->parent = this;
+			if (!pivot->right->is_nil())
+				pivot->right->parent = n;
 			n->parent = pivot;
-			pivot->right = this;
+			pivot->right = n;
 		}
 
-		void insert_case1(_node* n)
+		void _insert_case1(_node* n)
 		{
-			if (!parent)
-				is_red = false;
+			if (!n->parent)
+            {
+                _root = n;
+                n->is_red = false;
+            }
 			else
-				insert_case2();
+				_insert_case2(n);
 		}
 
-		void insert_case2()
+		void _insert_case2(_node* n)
 		{
-			if (parent->is_red)
-				insert_case3();
+			if (n->parent->is_red)
+				_insert_case3(n);
 		}
 
-		void insert_case3()
+		void _insert_case3(_node* n)
 		{
-			_node* u = uncle();
+			_node* u = n->uncle();
 			_node* g;
-			if (u != nil() && u->is_red)
+			if (!u->is_nil() && u->is_red)
 			{
-				parent->is_red = false;
+				n->parent->is_red = false;
 				u->is_red = false;
-				g = grandparent();
+				g = n->grandparent();
 				g->is_red = true;
-				g->insert_case1();
+				_insert_case1(g);
 			}
 			else
-				insert_case4();
+				_insert_case4(n);
 		}
 
-		void insert_case4()
+		void _insert_case4(_node* n)
 		{
-			_node* g = grandparent();
-			_node* ptr = this;
-			if (this == parent->right && parent == g->left)
+			_node* g = n->grandparent();
+			_node* ptr = n;
+			if (n == n->parent->right && n->parent == g->left)
 			{
-				parent->rotate_left();
-				ptr = left;
+				_rotate_left(n->parent);
+				ptr = n->left;
 			}
-			else if (this == parent->left && parent == g->right)
+			else if (n == n->parent->left && n->parent == g->right)
 			{
-				parent->rotate_right();
-				ptr = right;
+				_rotate_right(n->parent);
+				ptr = n->right;
 			}
-			ptr->insert_case5();
+			_insert_case5(ptr);
 		}
 
-		void insert_case5()
+		void _insert_case5(_node* n)
 		{
-			_node* g = grandparent();
-			parent->is_red = false;
+			_node* g = n->grandparent();
+			n->parent->is_red = false;
 			g->is_red = true;
-			if (this == parent->left && parent == g->left)
-				g->rotate_right();
+			if (n == n->parent->left && n->parent == g->left)
+				_rotate_right(g);
 			else
-				g->rotate_left();
+				_rotate_left(g);
 		}
 
-		void replace_node(_node* child) {
-			child->parent = parent;
-			if (this == parent->left) {
-				parent->left = child;
-			} else {
-				parent->right = child;
-			}
+		void _replace_node(_node* n, _node* child)
+        {
+			child->parent = n->parent;
+            if (!n->parent)
+                _root = child;
+            else
+            {
+                if (n == n->parent->left)
+                    n->parent->left = child;
+                else
+                    n->parent->right = child;
+            }
 		}
+
+        void _delete_one_child(struct _node *n)
+        {
+            struct _node *child = n->right->is_nil() ? n->left : n->right;
+
+            _replace_node(n, child);
+            if (!n->is_red)
+            {
+                if (child->is_red)
+                    child->is_red = false;
+                else
+                    _delete_case1(child);
+            }
+            _destroy_and_dealloc_node(n);
+        }
+
+        void _delete_case1(struct _node *n)
+        {
+            if (n->parent)
+                _delete_case2(n);
+        }
+
+        void _delete_case2(struct _node *n)
+        {
+            struct _node *s = n->sibling();
+
+            if (s->is_red) {
+                n->parent->is_red = true;
+                s->is_red = false;
+                if (n == n->parent->left)
+                    _rotate_left(n->parent);
+                else
+                    _rotate_right(n->parent);
+            }
+            _delete_case3(n);
+        }
+
+        void _delete_case3(struct _node *n)
+        {
+            struct _node *s = n->sibling();
+
+            if ((!n->parent->is_red) &&
+                (!s->is_red) &&
+                (!s->left->is_red) &&
+                (!s->right->is_red))
+            {
+                s->is_red = true;
+                _delete_case1(n->parent);
+            }
+            else
+                _delete_case4(n);
+        }
+
+        void _delete_case4(struct _node *n)
+        {
+            struct _node *s = n->sibling();
+
+            if ((n->parent->is_red) &&
+                (!s->is_red) &&
+                (!s->left->is_red) &&
+                (!s->right->is_red))
+            {
+                s->is_red = true;
+                n->parent->is_red = false;
+            }
+            else
+                _delete_case5(n);
+        }
+
+        void _delete_case5(struct _node *n)
+        {
+            struct _node *s = n->sibling();
+
+            if  (!s->is_red)
+            {
+                if ((n == n->parent->left) &&
+                    (!s->right->is_red) &&
+                    (s->left->is_red))
+                {
+                    s->is_red = true;
+                    s->left->is_red = false;
+                    _rotate_right(s);
+                }
+                else if ((n == n->parent->right) &&
+                           (!s->left->is_red) &&
+                           (s->right->is_red))
+                {
+                    s->is_red = true;
+                    s->right->is_red = true;
+                    _rotate_left(s);
+                }
+            }
+            _delete_case6(n);
+        }
+
+        void _delete_case6(struct _node *n)
+        {
+            struct _node *s = n->sibling();
+
+            s->is_red = n->parent->is_red;
+            n->parent->is_red = false;
+
+            if (n == n->parent->left) {
+                s->right->is_red = false;
+                _rotate_left(n->parent);
+            } else {
+                s->left->is_red = false;
+                _rotate_right(n->parent);
+            }
+        }
 
 		typedef typename Allocator::template rebind<_node>::other	_node_alloc_type;
 
@@ -252,11 +374,13 @@ namespace ft
 				typename ft::conditional<IsConst, const_pointer, pointer>::type,
 				typename ft::conditional<IsConst, const_reference, reference>::type>
 		{
+            friend class map;
+
 			typedef	typename ft::iterator_traits<_common_iterator>::pointer 	pointer;
 			typedef	typename ft::iterator_traits<_common_iterator>::reference 	reference;
 
-			_node* _ptr;
-			_node* _prev;
+            _node* _ptr;
+            _node* _prev;
 
 		public:
 			_common_iterator(): _ptr(nullptr), _prev(nullptr) {}
@@ -556,18 +680,17 @@ namespace ft
 			tmp = _alloc_and_init_node(parent, true, value);
             if (child)
                 *child = tmp;
-			tmp->insert_case1();
-            _root = tmp->advanced_up();
+			_insert_case1(tmp);
 			_first = _root->advanced_left();
 			_last = _root->advanced_right();
 			++_size;
 			return ft::make_pair(iterator(tmp, nullptr), true);
 		}
 
-		iterator insert(iterator hint, const value_type& value)
-		{
-
-		}
+//		iterator insert(iterator hint, const value_type& value)
+//		{
+//
+//		}
 
 //		template <class InputIterator>
 //		void insert(InputIterator first, InputIterator last)
@@ -575,13 +698,34 @@ namespace ft
 //
 //		}
 
-//		void erase( iterator pos );
+		void erase( iterator pos )
+        {
+            _delete_one_child(pos._ptr);
+            _first = _root->advanced_left();
+            _last = _root->advanced_right();
+        }
 //
 //		void erase( iterator first, iterator last );
 //
-//		size_type erase( const Key& key );
+		size_type erase( const Key& key )
+        {
+            iterator pos = find(key);
+            if (pos == end())
+                return 0;
+            erase(pos);
+            return 1;
+        }
 //
-//		void swap( map& other );
+		void swap( map& other )
+        {
+            std::swap(_val_comp, other._val_comp);
+            std::swap(_alloc, other._alloc);
+            std::swap(_node_alloc, other._node_alloc);
+            std::swap(_size, other._size);
+            std::swap(_root, other._root);
+            std::swap(_first, other._first);
+            std::swap(_last, other._last);
+        }
 
 		size_type count( const Key& key ) const
 		{ return find(key) == end() ? 0 : 1; }
@@ -592,7 +736,7 @@ namespace ft
 			while (tmp != _node::nil())
 			{
 				if (key == tmp->value->first)
-					return iterator(tmp);
+					return iterator(tmp, nullptr);
 				if (_val_comp.comp(key, tmp->value->first))
 					tmp = tmp->left;
 				else
@@ -618,10 +762,10 @@ namespace ft
 
 		ft::pair<iterator,iterator> equal_range( const Key& key )
 		{ return ft::make_pair(lower_bound(key), upper_bound(key)); }
-//
+
 		ft::pair<const_iterator,const_iterator> equal_range( const Key& key ) const
 		{ return ft::make_pair(lower_bound(key), upper_bound(key)); }
-//
+
 		iterator lower_bound( const Key& key )
 		{
 			_node* tmp = _root;
