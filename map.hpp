@@ -246,9 +246,9 @@ namespace ft
             }
 		}
 
-        void _delete_one_child(struct _node *n)
+        void _delete_one_child(_node *n)
         {
-            struct _node *child = n->right->is_nil() ? n->left : n->right;
+            _node* child = n->right->is_nil() ? n->left : n->right;
 
             _replace_node(n, child);
             if (!n->is_red)
@@ -261,13 +261,13 @@ namespace ft
             _destroy_and_dealloc_node(n);
         }
 
-        void _delete_case1(struct _node *n)
+        void _delete_case1(_node *n)
         {
             if (n->parent)
                 _delete_case2(n);
         }
 
-        void _delete_case2(struct _node *n)
+        void _delete_case2(_node *n)
         {
             struct _node *s = n->sibling();
 
@@ -282,9 +282,9 @@ namespace ft
             _delete_case3(n);
         }
 
-        void _delete_case3(struct _node *n)
+        void _delete_case3(_node *n)
         {
-            struct _node *s = n->sibling();
+            _node *s = n->sibling();
 
             if ((!n->parent->is_red) &&
                 (!s->is_red) &&
@@ -298,9 +298,9 @@ namespace ft
                 _delete_case4(n);
         }
 
-        void _delete_case4(struct _node *n)
+        void _delete_case4(_node *n)
         {
-            struct _node *s = n->sibling();
+            _node *s = n->sibling();
 
             if ((n->parent->is_red) &&
                 (!s->is_red) &&
@@ -314,9 +314,9 @@ namespace ft
                 _delete_case5(n);
         }
 
-        void _delete_case5(struct _node *n)
+        void _delete_case5(_node *n)
         {
-            struct _node *s = n->sibling();
+            _node *s = n->sibling();
 
             if  (!s->is_red)
             {
@@ -340,9 +340,9 @@ namespace ft
             _delete_case6(n);
         }
 
-        void _delete_case6(struct _node *n)
+        void _delete_case6(_node *n)
         {
-            struct _node *s = n->sibling();
+            _node *s = n->sibling();
 
             s->is_red = n->parent->is_red;
             n->parent->is_red = false;
@@ -622,28 +622,28 @@ namespace ft
 		{ return insert(value_type(key, T())).first->second; }
 
 		iterator begin()
-		{ return iterator(_first != _node::nil() ?  _first : nullptr, nullptr); }
+		{ return iterator(!_first->is_nil() ?  _first : nullptr, nullptr); }
 
         const_iterator begin() const
-        { return const_iterator(_first != _node::nil() ?  _first : nullptr, nullptr); }
+        { return const_iterator(!_first->is_nil() ?  _first : nullptr, nullptr); }
 
         iterator end()
-        { return iterator(nullptr, _last != _node::nil() ?  _last : nullptr); }
+        { return iterator(nullptr, !_last->is_nil() ?  _last : nullptr); }
 
         const_iterator end() const
-        { return const_iterator(nullptr, _last != _node::nil() ?  _last : nullptr); }
+        { return const_iterator(nullptr, !_last->is_nil() ?  _last : nullptr); }
 
         reverse_iterator rbegin()
-        { return reverse_iterator(iterator(_last != _node::nil() ?  _last : nullptr, nullptr)); }
+        { return reverse_iterator(iterator(!_last->is_nil() ? _last : nullptr, nullptr)); }
 
         const_reverse_iterator rbegin() const
-        { return const_reverse_iterator(const_iterator(_last != _node::nil() ?  _last : nullptr, nullptr)); }
+        { return const_reverse_iterator(const_iterator(!_last->is_nil() ?  _last : nullptr, nullptr)); }
 
         reverse_iterator rend()
-        { return reverse_iterator(iterator(nullptr, _first != _node::nil() ?  _first : nullptr)); }
+        { return reverse_iterator(iterator(nullptr, !_first->is_nil() ?  _first : nullptr)); }
 
         const_reverse_iterator rend() const
-        { return const_reverse_iterator(const_iterator(nullptr, _first != _node::nil() ?  _first : nullptr)); }
+        { return const_reverse_iterator(const_iterator(nullptr, !_first->is_nil() ?  _first : nullptr)); }
 
 		bool empty() const
 		{ return !_size; }
@@ -700,7 +700,15 @@ namespace ft
 
 		void erase( iterator pos )
         {
-            _delete_one_child(pos._ptr);
+            _node* ptr = pos._ptr;
+            if (!ptr->left->is_nil() && !ptr->right->is_nil())
+            {
+                _node* to_replace = ptr->right->advanced_left();
+                std::swap(ptr->value, to_replace->value);
+                _delete_one_child(to_replace);
+            }
+            else
+                _delete_one_child(ptr);
             _first = _root->advanced_left();
             _last = _root->advanced_right();
         }
