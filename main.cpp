@@ -324,7 +324,7 @@ int	main()
 		int num = rand() % 100;
 		map[num] = num;
 	}
-    map.erase(49);
+//    map.erase(49);
 	ft::map<int, int> map2 = map;
 	ft::map<int, int>::iterator it = map2.begin();
     for (; it != map2.end(); ++it)

@@ -666,9 +666,9 @@ namespace ft
 			_node* tmp = _root;
 			_node* parent = nullptr;
 			_node** child = nullptr;
-            while (tmp != _node::nil())
+            while (!tmp->is_nil())
             {
-				if (tmp->value->second == value.second)
+				if (tmp->value->first == value.first)
 					return ft::make_pair(iterator(tmp, nullptr), false);
                 parent = tmp;
                 if (_val_comp(value, *tmp->value))
@@ -687,10 +687,21 @@ namespace ft
 			return ft::make_pair(iterator(tmp, nullptr), true);
 		}
 
-//		iterator insert(iterator hint, const value_type& value)
-//		{
-//
-//		}
+		iterator insert(iterator hint, const value_type& value)
+		{
+            _node* ptr = hint._ptr;
+
+            while (ptr->parent)
+            {
+                if (ptr->value->first == value.first)
+                    return iterator(ptr, nullptr);
+                if ((ptr == ptr->parent->left && _val_comp(value, *ptr->parent->value)) ||
+                    (ptr == ptr->parent->right && _val_comp(*ptr->parent->value, value)))
+                    ptr = ptr->parent;
+
+            }
+            return insert(value).first;
+		}
 
 //		template <class InputIterator>
 //		void insert(InputIterator first, InputIterator last)
@@ -704,6 +715,7 @@ namespace ft
             if (!ptr->left->is_nil() && !ptr->right->is_nil())
             {
                 _node* to_replace = ptr->right->advanced_left();
+                //TO FIX
                 std::swap(ptr->value, to_replace->value);
                 _delete_one_child(to_replace);
             }
@@ -712,9 +724,28 @@ namespace ft
             _first = _root->advanced_left();
             _last = _root->advanced_right();
         }
-//
-//		void erase( iterator first, iterator last );
-//
+
+		void erase( iterator first, iterator last )
+        {
+            _node* ptr;
+            _node* to_replace;
+
+            for (iterator it = first; it != last; ++it)
+            {
+                ptr = it._ptr;
+                if (!ptr->left->is_nil() && !ptr->right->is_nil())
+                {
+                    to_replace = ptr->right->advanced_left();
+                    std::swap(ptr->value, to_replace->value);
+                    _delete_one_child(to_replace);
+                }
+                else
+                    _delete_one_child(ptr);
+            }
+            _first = _root->advanced_left();
+            _last = _root->advanced_right();
+        }
+
 		size_type erase( const Key& key )
         {
             iterator pos = find(key);
@@ -723,7 +754,7 @@ namespace ft
             erase(pos);
             return 1;
         }
-//
+
 		void swap( map& other )
         {
             std::swap(_val_comp, other._val_comp);
