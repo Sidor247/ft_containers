@@ -129,6 +129,14 @@ namespace ft
 				else
 					return parent->left;
 			}
+
+            _node*& child_pointer()
+            {
+                if (this == parent->left)
+                    return parent->left;
+                else
+                    return parent->right;
+            }
 		};
 
 		void _rotate_left(_node* n)
@@ -238,13 +246,46 @@ namespace ft
             if (!n->parent)
                 _root = child;
             else
-            {
-                if (n == n->parent->left)
-                    n->parent->left = child;
-                else
-                    n->parent->right = child;
-            }
+                n->child_pointer() = child;
 		}
+
+        void _node_swap(_node* root, _node* leaf)
+        {
+//            if (leaf->parent == root)
+//            {
+//                leaf->parent = root->parent;
+//                root->parent = leaf;
+//            }
+//            else
+//                std::swap(root->parent, leaf->parent);
+//            if (root->left == leaf)
+//            {
+//                leaf->left = root;
+//                root->left = _node::nil();
+//            }
+//            else
+//                std::swap(root->left, leaf->left);
+//            if (root->right == leaf)
+//            {
+//                leaf->right = root;
+//                root->right = _node::nil();
+//            }
+//            else
+//                std::swap(root->right, leaf->right);
+//            std::swap(root->is_red, leaf->is_red);
+            if (root->parent)
+                std::swap(root->child_pointer(), leaf->child_pointer());
+            else
+                std::swap(_root, root->child_pointer());
+            if (!root->left->is_nil())
+                root->left->parent = root;
+            if (!root->right->is_nil())
+                root->right->parent = root;
+            std::swap(root->parent, leaf->parent);
+            std::swap(root->left, leaf->left);
+            std::swap(root->right, leaf->right);
+            std::swap(root->is_red, leaf->is_red);
+        }
 
         void _delete_one_child(_node *n)
         {
@@ -713,14 +754,8 @@ namespace ft
         {
             _node* ptr = pos._ptr;
             if (!ptr->left->is_nil() && !ptr->right->is_nil())
-            {
-                _node* to_replace = ptr->right->advanced_left();
-                //TO FIX
-                std::swap(ptr->value, to_replace->value);
-                _delete_one_child(to_replace);
-            }
-            else
-                _delete_one_child(ptr);
+                _node_swap(ptr, ptr->right->advanced_left());
+            _delete_one_child(ptr);
             _first = _root->advanced_left();
             _last = _root->advanced_right();
         }
