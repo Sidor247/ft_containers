@@ -251,40 +251,28 @@ namespace ft
 
         void _node_swap(_node* root, _node* leaf)
         {
-//            if (leaf->parent == root)
-//            {
-//                leaf->parent = root->parent;
-//                root->parent = leaf;
-//            }
-//            else
-//                std::swap(root->parent, leaf->parent);
-//            if (root->left == leaf)
-//            {
-//                leaf->left = root;
-//                root->left = _node::nil();
-//            }
-//            else
-//                std::swap(root->left, leaf->left);
-//            if (root->right == leaf)
-//            {
-//                leaf->right = root;
-//                root->right = _node::nil();
-//            }
-//            else
-//                std::swap(root->right, leaf->right);
-//            std::swap(root->is_red, leaf->is_red);
             if (root->parent)
-                std::swap(root->child_pointer(), leaf->child_pointer());
+                root->child_pointer() = leaf;
             else
-                std::swap(_root, root->child_pointer());
-            if (!root->left->is_nil())
-                root->left->parent = root;
-            if (!root->right->is_nil())
-                root->right->parent = root;
-            std::swap(root->parent, leaf->parent);
+                _root = leaf;
+            if (root->right == leaf)
+            {
+                leaf->parent = root->parent;
+                leaf->right = root;
+                root->right = _node::nil();
+            }
+            else
+            {
+                leaf->child_pointer() = root;
+                std::swap(root->parent, leaf->parent);
+                std::swap(root->right, leaf->right);
+            }
             std::swap(root->left, leaf->left);
-            std::swap(root->right, leaf->right);
             std::swap(root->is_red, leaf->is_red);
+            if (!leaf->left->is_nil())
+                leaf->left->parent = leaf;
+            if (!leaf->right->is_nil())
+                leaf->right->parent = leaf;
         }
 
         void _delete_one_child(_node *n)
@@ -758,6 +746,7 @@ namespace ft
             _delete_one_child(ptr);
             _first = _root->advanced_left();
             _last = _root->advanced_right();
+            --_size;
         }
 
 		void erase( iterator first, iterator last )
@@ -779,6 +768,7 @@ namespace ft
             }
             _first = _root->advanced_left();
             _last = _root->advanced_right();
+//            --_size;
         }
 
 		size_type erase( const Key& key )
