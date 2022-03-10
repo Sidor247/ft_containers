@@ -319,12 +319,12 @@ int	main()
 //    for (ft::vector<ft::pair<int, int> >::reverse_iterator it = v.rbegin(); it != v.rend(); ++it)
 //        std::cout << it->first << std::endl;
 	ft::map<int, int> map;
-	for (int i = 0; i < 7; ++i)
-	{
-		int num = rand() % 100;
-		map[num] = num;
-	}
-    map.erase(73);
+//	for (int i = 0; i < 7; ++i)
+//	{
+//		int num = rand() % 100;
+//		map[num] = num;
+//	}
+//    map.erase(73);
 	ft::map<int, int> map2 = map;
 	ft::map<int, int>::iterator it = map2.begin();
     for (; it != map2.end(); ++it)
