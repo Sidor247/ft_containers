@@ -318,13 +318,16 @@ int	main()
 //    v.push_back(ft::pair<int, int>(1, 1));
 //    for (ft::vector<ft::pair<int, int> >::reverse_iterator it = v.rbegin(); it != v.rend(); ++it)
 //        std::cout << it->first << std::endl;
+    ft::vector< const ft::pair<const int,int> > v;
 	ft::map<int, int> map;
-//	for (int i = 0; i < 7; ++i)
-//	{
+	for (int i = 0; i < 7; ++i)
+	{
 //		int num = rand() % 100;
-//		map[num] = num;
-//	}
-//    map.erase(73);
+        const ft::pair<const int,int> p(i, i);
+		v.push_back(p);
+	}
+    map.insert(v.begin(), v.end());
+    map.erase(30);
 	ft::map<int, int> map2 = map;
 	ft::map<int, int>::iterator it = map2.begin();
     for (; it != map2.end(); ++it)
