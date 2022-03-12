@@ -72,6 +72,6 @@ friend	bool operator>=(const stack& lhs, const stack& rhs)
 		{ return lhs.c >= rhs.c; }
 	};
 
-}
+};
 
 #endif

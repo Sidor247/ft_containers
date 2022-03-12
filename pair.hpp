@@ -15,8 +15,8 @@ namespace ft
 		typedef T2 second_type;
 	
 		pair():
-			first(T1()),
-			second(T2()) {}
+			first(),
+			second() {}
 	
 		pair( const T1& x, const T2& y ):
 			first(x),
@@ -65,10 +65,8 @@ friend	bool operator>=( const pair& lhs, const pair& rhs )
 
 	template< class T1, class T2 >
 	ft::pair<T1,T2> make_pair( T1 t, T2 u )
-	{
-		return pair<T1, T2>(t, u);
-	}
+	{ return pair<T1, T2>(t, u); }
 
-}
+};
 
 #endif

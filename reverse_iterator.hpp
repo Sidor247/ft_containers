@@ -108,6 +108,6 @@ friend	difference_type		operator-(const reverse_iterator& lhs, const reverse_ite
 		iterator_type current;
 	};
 
-}
+};
 
 #endif

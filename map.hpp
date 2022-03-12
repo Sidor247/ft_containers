@@ -6,6 +6,7 @@
 #include <iterator>
 #include "pair.hpp"
 #include "reverse_iterator.hpp"
+#include "algorithm.hpp"
 
 namespace ft
 {
@@ -937,8 +938,33 @@ namespace ft
 		key_compare key_comp() const
 		{ return _val_comp.comp; }
 
-	};
+		friend 	bool operator==(const map& lhs, const map& rhs )
+		{ return lhs._size == rhs._size && ft::equal(lhs.begin(), lhs.end(), rhs.begin()); }
 
-}
+		friend 	bool operator!=(const map& lhs, const map& rhs )
+		{ return !(lhs == rhs); }
+
+		friend 	bool operator< (const map& lhs, const map& rhs )
+		{ return ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()); }
+
+		friend 	bool operator> (const map& lhs, const map& rhs )
+		{ return rhs < lhs; }
+
+		friend 	bool operator<=(const map& lhs, const map& rhs )
+		{ return !(rhs > lhs); }
+
+		friend 	bool operator>=(const map& lhs, const map& rhs )
+		{ return !(rhs < lhs); }
+	};
+	
+};
+
+namespace std
+{
+	template< class Key, class T, class Compare, class Alloc >
+	void swap( ft::map<Key,T,Compare,Alloc>& lhs,
+			   ft::map<Key,T,Compare,Alloc>& rhs )
+	{ lhs.swap(rhs); }
+};
 
 #endif

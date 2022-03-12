@@ -76,6 +76,7 @@ namespace ft
 
 	template<typename T>
 	struct is_integral: is_integral_base<typename remove_cv<T>::type>::type {};
-}
+
+};
 
 #endif

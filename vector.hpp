@@ -614,11 +614,16 @@ friend 	bool operator<=(const vector& lhs, const vector& rhs )
 
 friend 	bool operator>=(const vector& lhs, const vector& rhs )
 		{ return !(rhs < lhs); }
-
-friend	void swap( vector& lhs, vector& rhs )
-		{ lhs.swap(rhs); }
 	};
 
-}
+};
+
+namespace std
+{
+	template< class T, class Alloc >
+	void swap( std::vector<T,Alloc>& lhs,
+			   std::vector<T,Alloc>& rhs )
+	{ lhs.swap(rhs); }
+};
 
 #endif
