@@ -22,9 +22,10 @@ namespace ft
 			first(x),
 			second(y) {}
 
-		pair( const pair& p ):
-			first(p.first),
-			second(p.second) {}
+        template<class U, class V>
+        pair(const pair<U,V>& pr):
+			first(pr.first),
+			second(pr.second) {}
 	
 		pair& operator=( const pair& other )
 		{
@@ -64,7 +65,7 @@ friend	bool operator>=( const pair& lhs, const pair& rhs )
 	};
 
 	template< class T1, class T2 >
-	ft::pair<T1,T2> make_pair( T1 t, T2 u )
+	pair<T1,T2> make_pair( T1 t, T2 u )
 	{ return pair<T1, T2>(t, u); }
 
 };

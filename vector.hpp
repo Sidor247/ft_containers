@@ -41,12 +41,11 @@ namespace ft
 			typename ft::conditional<IsConst, const T*, T*>::type,
 			typename ft::conditional<IsConst, const T&, T&>::type>
 		{
-			typedef	typename ft::iterator_traits<_common_iterator>::pointer 	pointer;
-			typedef	typename ft::iterator_traits<_common_iterator>::reference 	reference;
-
 			pointer _ptr;
 
 		public:
+            typedef	typename ft::iterator_traits<_common_iterator>::pointer 	pointer;
+            typedef	typename ft::iterator_traits<_common_iterator>::reference 	reference;
 
 			_common_iterator(): _ptr(nullptr) {}
 			_common_iterator(pointer ptr): _ptr(ptr) {}

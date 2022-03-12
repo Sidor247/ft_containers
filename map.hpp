@@ -406,13 +406,13 @@ namespace ft
 		{
             friend class map;
 
-			typedef	typename ft::iterator_traits<_common_iterator>::pointer 	pointer;
-			typedef	typename ft::iterator_traits<_common_iterator>::reference 	reference;
-
             _node* _ptr;
             _node* _prev;
 
 		public:
+            typedef	typename ft::iterator_traits<_common_iterator>::pointer 	pointer;
+            typedef	typename ft::iterator_traits<_common_iterator>::reference 	reference;
+
 			_common_iterator(): _ptr(nullptr), _prev(nullptr) {}
 			_common_iterator(_node* ptr, _node* prev): _ptr(ptr), _prev(prev) {}
 			_common_iterator(const _common_iterator& src): _ptr(src._ptr), _prev(src._prev) {}
