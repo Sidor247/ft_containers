@@ -4,9 +4,7 @@
 #include <memory>
 #include <limits>
 #include <iterator>
-#include "pair.hpp"
-#include "reverse_iterator.hpp"
-#include "algorithm.hpp"
+#include "utility.hpp"
 
 namespace ft
 {
@@ -410,8 +408,11 @@ namespace ft
             _node* _prev;
 
 		public:
-            typedef	typename ft::iterator_traits<_common_iterator>::pointer 	pointer;
-            typedef	typename ft::iterator_traits<_common_iterator>::reference 	reference;
+            typedef typename ft::iterator_traits<_common_iterator>::iterator_category	iterator_category;
+            typedef	typename ft::iterator_traits<_common_iterator>::value_type			value_type;
+            typedef	typename ft::iterator_traits<_common_iterator>::difference_type		difference_type;
+            typedef	typename ft::iterator_traits<_common_iterator>::pointer 			pointer;
+            typedef	typename ft::iterator_traits<_common_iterator>::reference 			reference;
 
 			_common_iterator(): _ptr(nullptr), _prev(nullptr) {}
 			_common_iterator(_node* ptr, _node* prev): _ptr(ptr), _prev(prev) {}
