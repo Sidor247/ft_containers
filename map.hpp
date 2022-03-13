@@ -50,7 +50,6 @@ namespace ft
 			_node*		right;
 			pointer 	value;
 
-		private:
 			_node():
 				is_red(false),
 				parent(nullptr),
@@ -58,7 +57,6 @@ namespace ft
 				right(nullptr),
 				value(nullptr) {}
 
-		public:
 			static _node* nil()
 			{
 				static _node nil;
@@ -78,14 +76,6 @@ namespace ft
 				left(nil()),
 				right(nil()),
 				value(src.value) {}
-
-            _node*  advanced_up()
-            {
-                _node* ptr = this;
-                while (ptr->parent)
-                    ptr = ptr->parent;
-                return ptr;
-            }
 
 			_node*	advanced_left()
 			{
@@ -108,7 +98,7 @@ namespace ft
 			}
 
 			_node*	grandparent() const
-			{ return parent ? parent->parent : nullptr; }
+			{ return parent->parent; }
 
 			_node*	uncle() const
 			{
@@ -138,11 +128,18 @@ namespace ft
             }
 		};
 
+        void _update_root(_node* root)
+        {
+            _root = root;
+            _end.left = root;
+            _end.right = root;
+        }
+
 		void _rotate_left(_node* n)
 		{
 			_node* pivot = n->right;
 			pivot->parent = n->parent;
-			if (n->parent)
+			if (n->parent != &_end)
 			{
 				if (n->parent->left == n)
 					n->parent->left = pivot;
@@ -150,7 +147,7 @@ namespace ft
 					n->parent->right = pivot;
 			}
             else
-                _root = pivot;
+                _update_root(pivot);
 			n->right = pivot->left;
 			if (!pivot->left->is_nil())
 				pivot->left->parent = n;
@@ -162,7 +159,7 @@ namespace ft
 		{
 			_node* pivot = n->left;
 			pivot->parent = n->parent;
-			if (n->parent)
+			if (n->parent != &_end)
 			{
 				if (n->parent->left == n)
 					n->parent->left = pivot;
@@ -170,7 +167,7 @@ namespace ft
 					n->parent->right = pivot;
 			}
             else
-                _root = pivot;
+                _update_root(pivot);
 			n->left = pivot->right;
 			if (!pivot->right->is_nil())
 				pivot->right->parent = n;
@@ -180,9 +177,9 @@ namespace ft
 
 		void _insert_case1(_node* n)
 		{
-			if (!n->parent)
+			if (n->parent == &_end)
             {
-                _root = n;
+                _update_root(n);
                 n->is_red = false;
             }
 			else
@@ -242,18 +239,18 @@ namespace ft
 		void _replace_node(_node* n, _node* child)
         {
 			child->parent = n->parent;
-            if (!n->parent)
-                _root = child;
+            if (n->parent == &_end)
+                _update_root(child);
             else
                 n->child_pointer() = child;
 		}
 
         void _node_swap(_node* root, _node* leaf)
         {
-            if (root->parent)
+            if (root->parent != &_end)
                 root->child_pointer() = leaf;
             else
-                _root = leaf;
+                _update_root(leaf);
             if (root->right == leaf)
             {
                 leaf->parent = root->parent;
@@ -291,7 +288,7 @@ namespace ft
 
         void _delete_case1(_node *n)
         {
-            if (n->parent)
+            if (n->parent != &_end)
                 _delete_case2(n);
         }
 
@@ -390,22 +387,17 @@ namespace ft
 		Allocator			_alloc;
 		_node_alloc_type 	_node_alloc;
 		size_type 			_size;
+        _node               _end;
 		_node*				_root;
 		_node*				_first;
 		_node*				_last;
 
 		template<bool IsConst>
-		class _common_iterator : public std::iterator<
-				std::bidirectional_iterator_tag,
-				value_type,
-				std::ptrdiff_t,
-				typename ft::conditional<IsConst, const_pointer, pointer>::type,
-				typename ft::conditional<IsConst, const_reference, reference>::type>
+		class _common_iterator
 		{
             friend class map;
 
             _node* _ptr;
-            _node* _prev;
 
 		public:
             typedef std::bidirectional_iterator_tag	                                    iterator_category;
@@ -414,16 +406,15 @@ namespace ft
             typedef	typename ft::conditional<IsConst, const_pointer, pointer>::type     pointer;
             typedef	typename ft::conditional<IsConst, const_reference, reference>::type reference;
 
-			_common_iterator(): _ptr(nullptr), _prev(nullptr) {}
-			_common_iterator(_node* ptr, _node* prev): _ptr(ptr), _prev(prev) {}
-			_common_iterator(const _common_iterator& src): _ptr(src._ptr), _prev(src._prev) {}
+			_common_iterator(): _ptr(nullptr) {}
+			_common_iterator(_node* ptr): _ptr(ptr) {}
+			_common_iterator(const _common_iterator& src): _ptr(src._ptr) {}
 
 			_common_iterator&	operator=(const _common_iterator& src)
 			{
 				if (this == &src)
 					return *this;
 				_ptr = src._ptr;
-				_prev = src._prev;
 				return *this;
 			}
 
@@ -435,22 +426,16 @@ namespace ft
 
 			_common_iterator&	operator++()
 			{
-				if (_ptr)
-				{
-					_prev = _ptr;
-					if (_ptr->right != _node::nil())
-						_ptr = _ptr->right->advanced_left();
-					else {
-						_node *tmp = _ptr->parent;
-						while (tmp && _ptr == tmp->right) {
-							_ptr = tmp;
-							tmp = tmp->parent;
-						}
-						_ptr = tmp;
-					}
-				}
-				else
-					_ptr = _prev;
+                if (_ptr->right != _node::nil())
+                    _ptr = _ptr->right->advanced_left();
+                else {
+                    _node *tmp = _ptr->parent;
+                    while (_ptr == tmp->right) {
+                        _ptr = tmp;
+                        tmp = tmp->parent;
+                    }
+                    _ptr = tmp;
+                }
 				return *this;
 			}
 
@@ -463,22 +448,17 @@ namespace ft
 
 			_common_iterator&	operator--()
 			{
-				if (_ptr)
-				{
-					_prev = _ptr;
-					if (_ptr->left != _node::nil())
-						_ptr = _ptr->left->advanced_right();
-					else {
-						_node *tmp = _ptr->parent;
-						while (tmp && _ptr == tmp->left) {
-							_ptr = tmp;
-							tmp = tmp->parent;
-						}
-						_ptr = tmp;
-					}
-				}
-				else
-					_ptr = _prev;
+                if (_ptr->left != _node::nil())
+                    _ptr = _ptr->left->advanced_right();
+                else
+                {
+                    _node *tmp = _ptr->parent;
+                    while (_ptr == tmp->left) {
+                        _ptr = tmp;
+                        tmp = tmp->parent;
+                    }
+                    _ptr = tmp;
+                }
 				return *this;
 			}
 
@@ -490,7 +470,7 @@ namespace ft
 			}
 
 			operator _common_iterator<true>()
-			{ return _common_iterator<true>(_ptr, _prev); }
+			{ return _common_iterator<true>(_ptr); }
 
 			friend	bool operator==(const _common_iterator& lhs, const _common_iterator& rhs)
 			{ return lhs._ptr == rhs._ptr; }
@@ -560,17 +540,13 @@ namespace ft
 			return newnode;
 		}
 
-		template<class InputIt>
-		_node*	_alloc_and_init(InputIt, InputIt)
-		{
-
-		}
-
-        _node*  _find(const key_type& key, _node* root)
+        _node*  _find(const key_type& key, _node* root) const
         {
             _node* ptr = root;
             _node* parent = nullptr;
 
+            if (root->is_nil())
+                return root;
             while (!ptr->is_nil())
             {
                 parent = ptr;
@@ -587,12 +563,12 @@ namespace ft
             return parent;
         }
 
-        _node*  _find(_node* hint, const key_type& key)
+        _node*  _find(_node* hint, const key_type& key) const
         {
             _node* ptr = hint;
             _node* parent = nullptr;
 
-            while (ptr->parent)
+            while (ptr->parent != &_end)
             {
                 parent = ptr->parent;
                 if ((_val_comp.comp(parent->value->first, key) && ptr == parent->right)
@@ -611,41 +587,46 @@ namespace ft
 
 		map():
 			_val_comp(Compare()),
-			_alloc(Allocator()),
-			_node_alloc(_node_alloc_type()),
-			_size(size_type()),
+			_alloc(),
+			_node_alloc(),
+			_size(),
+            _end(),
 			_root(_node::nil()),
-			_first(_node::nil()),
-			_last(_node::nil()) {}
+			_first(&_end),
+			_last(&_end) {}
 
 		explicit map( const Compare& comp,
 					  const Allocator& alloc = Allocator() ):
 					  _val_comp(comp),
 					  _alloc(alloc),
 					  _node_alloc(alloc),
-					  _size(size_type()),
-					  _root(_node::nil()),
-					  _first(_node::nil()),
-					  _last(_node::nil()) {}
+					  _size(),
+                      _end(),
+                      _root(_node::nil()),
+                      _first(&_end),
+                      _last(&_end) {}
 
 		template< class InputIt >
 		map( InputIt first, InputIt last,
 			 const Compare& comp = Compare(),
 			 const Allocator& alloc = Allocator() ):
-			 _val_comp(value_compare(comp)),
+			 _val_comp(comp),
 			 _alloc(alloc),
 			 _node_alloc(alloc),
-			 _size(size_type()),
-			 _root(_alloc_and_init(first, last)),
-			 _first(_root->advanced_left()),
-			 _last(_root->advanced_right()) {}
+			 _size(),
+             _end(),
+             _root(_node::nil()),
+             _first(&_end),
+             _last(&_end)
+         { insert(first, last); }
 
 		map( const map& other ):
 			_val_comp(other._val_comp.comp),
 			_alloc(other._alloc),
 			_node_alloc(other._node_alloc),
 			_size(other._size),
-			_root(_alloc_and_copy(nullptr, other._root)),
+            _end(),
+			_root(_alloc_and_copy(&_end, other._root)),
 			_first(_root->advanced_left()),
 			_last(_root->advanced_right()) {}
 
@@ -656,13 +637,13 @@ namespace ft
 		{
 			if (this == &other)
 				return *this;
-			_node* newtree = _alloc_and_copy(other._root);
+			_node* newtree = _alloc_and_copy(&_end, other._root);
 			_destroy_and_dealloc(_root);
 			_val_comp = other._val_comp.comp;
 			_alloc = other._alloc;
 			_node_alloc = other._node_alloc;
 			_size = other._size;
-			_root = newtree;
+            _update_root(newtree);
 			_first = _root->advanced_left();
 			_last = _root->advanced_right();
 		}
@@ -690,28 +671,28 @@ namespace ft
 		{ return insert(value_type(key, T())).first->second; }
 
 		iterator begin()
-		{ return iterator(!_first->is_nil() ?  _first : nullptr, nullptr); }
+		{ return iterator(_first); }
 
         const_iterator begin() const
-        { return const_iterator(!_first->is_nil() ?  _first : nullptr, nullptr); }
+        { return const_iterator(_first); }
 
         iterator end()
-        { return iterator(nullptr, !_last->is_nil() ?  _last : nullptr); }
+        { return iterator(&_end); }
 
         const_iterator end() const
-        { return const_iterator(nullptr, !_last->is_nil() ?  _last : nullptr); }
+        { return const_iterator(&_end); }
 
         reverse_iterator rbegin()
-        { return reverse_iterator(iterator(!_last->is_nil() ? _last : nullptr, nullptr)); }
+        { return reverse_iterator(iterator(_last)); }
 
         const_reverse_iterator rbegin() const
-        { return const_reverse_iterator(const_iterator(!_last->is_nil() ?  _last : nullptr, nullptr)); }
+        { return const_reverse_iterator(const_iterator(_last)); }
 
         reverse_iterator rend()
-        { return reverse_iterator(iterator(nullptr, !_first->is_nil() ?  _first : nullptr)); }
+        { return reverse_iterator(iterator(&_end)); }
 
         const_reverse_iterator rend() const
-        { return const_reverse_iterator(const_iterator(nullptr, !_first->is_nil() ?  _first : nullptr)); }
+        { return const_reverse_iterator(const_iterator(&_end)); }
 
 		bool empty() const
 		{ return !_size; }
@@ -725,17 +706,21 @@ namespace ft
 		void clear()
 		{
 			_destroy_and_dealloc(_root);
-			_root = _node::nil();
+            _end.left = nullptr;
+            _end.right = nullptr;
+			_root = &_end;
+            _first = &_end;
+            _last = &_end;
 			_size = 0;
 		}
 
 		ft::pair<iterator, bool> insert(const value_type& value)
 		{
             _node* pos = _find(value.first, _root);
-            if (pos && !_val_comp(*pos->value, value) && !_val_comp(value, *pos->value))
-                return ft::make_pair(iterator(pos, nullptr), false);
-			_node* new_node = _alloc_and_init_node(pos, true, value);
-            if (pos)
+            if (!pos->is_nil() && !_val_comp(*pos->value, value) && !_val_comp(value, *pos->value))
+                return ft::make_pair(iterator(pos), false);
+			_node* new_node = _alloc_and_init_node(pos->is_nil() ? &_end : pos, true, value);
+            if (!pos->is_nil())
             {
                 if (_val_comp(value, *pos->value))
                     pos->left = new_node;
@@ -743,21 +728,21 @@ namespace ft
                     pos->right = new_node;
             }
             else
-                _root = new_node;
+                _update_root(new_node);
 			_insert_case1(new_node);
 			_first = _root->advanced_left();
 			_last = _root->advanced_right();
 			++_size;
-			return ft::make_pair(iterator(new_node, nullptr), true);
+			return ft::make_pair(iterator(new_node), true);
 		}
 
 		iterator insert(iterator hint, const value_type& value)
 		{
             _node* pos = _find(hint._ptr, value.first);
-            if (pos && !_val_comp(*pos->value, value) && !_val_comp(value, *pos->value))
-                return iterator(pos, nullptr);
+            if (pos != &_end && !_val_comp(*pos->value, value) && !_val_comp(value, *pos->value))
+                return iterator(pos);
             _node* new_node = _alloc_and_init_node(pos, true, value);
-            if (pos)
+            if (pos != &_end)
             {
                 if (_val_comp(value, *pos->value))
                     pos->left = new_node;
@@ -765,12 +750,12 @@ namespace ft
                     pos->right = new_node;
             }
             else
-                _root = new_node;
+                _update_root(new_node);
             _insert_case1(new_node);
             _first = _root->advanced_left();
             _last = _root->advanced_right();
             ++_size;
-            return iterator(new_node, nullptr);
+            return iterator(new_node);
 		}
 
 		template <class InputIterator>
@@ -819,6 +804,7 @@ namespace ft
             return 1;
         }
 
+        //?
 		void swap( map& other )
         {
             std::swap(_val_comp, other._val_comp);
@@ -838,7 +824,7 @@ namespace ft
             _node* ptr = _find(key, _root);
             if (ptr && !_val_comp.comp(ptr->value->first, key)
                     && !_val_comp.comp(key, ptr->value->first))
-                return iterator(ptr, nullptr);
+                return iterator(ptr);
             else
 			    return end();
 		}
@@ -848,7 +834,7 @@ namespace ft
             _node* ptr = _find(key);
             if (ptr && !_val_comp.comp(ptr->value->first, key)
                 && !_val_comp.comp(key, ptr->value->first))
-                return const_iterator(ptr, nullptr);
+                return const_iterator(ptr);
             else
                 return end();
 		}
@@ -866,7 +852,7 @@ namespace ft
 			while (tmp != _node::nil())
 			{
 				if (key == tmp->value->first)
-					return iterator(tmp, nullptr);
+					return iterator(tmp);
 				if (_val_comp.comp(key, tmp->value->first))
 				{
 					prev = tmp;
@@ -875,7 +861,7 @@ namespace ft
 				else
 					tmp = tmp->right;
 			}
-			return prev && _val_comp.comp(key, prev->value->first) ? iterator(prev, nullptr) : end();
+			return prev && _val_comp.comp(key, prev->value->first) ? iterator(prev) : end();
 		}
 
 		const_iterator lower_bound( const Key& key ) const
@@ -885,7 +871,7 @@ namespace ft
 			while (tmp != _node::nil())
 			{
 				if (key == tmp->value->first)
-					return const_iterator(tmp, nullptr);
+					return const_iterator(tmp);
 				if (_val_comp.comp(key, tmp->value->first))
 				{
 					prev = tmp;
@@ -894,7 +880,7 @@ namespace ft
 				else
 					tmp = tmp->right;
 			}
-			return prev && _val_comp.comp(key, prev->value->first) ? const_iterator(prev, nullptr) : end();
+			return prev && _val_comp.comp(key, prev->value->first) ? const_iterator(prev) : end();
 		}
 
 		iterator upper_bound( const Key& key )
@@ -911,7 +897,7 @@ namespace ft
 				else
 					tmp = tmp->right;
 			}
-			return prev && _val_comp.comp(key, prev->value->first) ? iterator(prev, nullptr) : end();
+			return prev && _val_comp.comp(key, prev->value->first) ? iterator(prev) : end();
 		}
 
 		const_iterator upper_bound( const Key& key ) const
@@ -921,7 +907,7 @@ namespace ft
 			while (tmp != _node::nil())
 			{
 				if (key == tmp->value->first)
-					return const_iterator(tmp, nullptr);
+					return const_iterator(tmp);
 				if (_val_comp.comp(key, tmp->value->first))
 				{
 					prev = tmp;
@@ -930,7 +916,7 @@ namespace ft
 				else
 					tmp = tmp->right;
 			}
-			return prev && !_val_comp.comp(key, prev->value->first) ? const_iterator(prev, nullptr) : end();
+			return prev && !_val_comp.comp(key, prev->value->first) ? const_iterator(prev) : end();
 		}
 
 		value_compare value_comp() const
