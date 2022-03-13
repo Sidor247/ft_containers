@@ -124,6 +124,9 @@
  		std::cout << *it;
  	}
  	std::cout << std::endl;
+    ft::vector<int> v1;
+    ft::vector<int> v2;
+    std::swap(v1, v2);
  	return (0);
  }
 //

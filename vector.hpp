@@ -32,21 +32,14 @@ namespace ft
 		pointer			_arr;
 
 		template<bool IsConst>
-		class _common_iterator : public std::iterator<
-			std::random_access_iterator_tag,
-			T,
-			std::ptrdiff_t,
-			typename ft::conditional<IsConst, const T*, T*>::type,
-			typename ft::conditional<IsConst, const T&, T&>::type>
+		class _common_iterator
 		{
-			pointer _ptr;
-
 		public:
-            typedef typename ft::iterator_traits<_common_iterator>::iterator_category	iterator_category;
-            typedef	typename ft::iterator_traits<_common_iterator>::value_type			value_type;
-            typedef	typename ft::iterator_traits<_common_iterator>::difference_type		difference_type;
-            typedef	typename ft::iterator_traits<_common_iterator>::pointer 			pointer;
-            typedef	typename ft::iterator_traits<_common_iterator>::reference 			reference;
+            typedef std::random_access_iterator_tag	                        iterator_category;
+            typedef	T		                                                value_type;
+            typedef	std::ptrdiff_t		                                    difference_type;
+            typedef	typename ft::conditional<IsConst, const T*, T*>::type   pointer;
+            typedef	typename ft::conditional<IsConst, const T&, T&>::type   reference;
 
 			_common_iterator(): _ptr(nullptr) {}
 			_common_iterator(pointer ptr): _ptr(ptr) {}
@@ -59,10 +52,10 @@ namespace ft
 				return *this;
 			}
 
-			reference	operator*()
+			reference	operator*() const
 			{ return *_ptr; }
 
-			pointer		operator->()
+			pointer		operator->() const
 			{ return _ptr; }
 
 			reference	operator[](difference_type n)
@@ -144,6 +137,9 @@ namespace ft
 
 	friend	difference_type		operator-(const _common_iterator& lhs, const _common_iterator& rhs)
 			{ return lhs._ptr - rhs._ptr; }
+
+        private:
+            pointer _ptr;
 		};
 
 		void _destroy_range(T* start, T* end)
@@ -257,7 +253,7 @@ namespace ft
 		typedef ft::reverse_iterator<const_iterator>	const_reverse_iterator;
 
 		vector():
-			_alloc(std::allocator<T>()),
+			_alloc(),
 			_size(0u),
 			_cap(0u),
 			_arr(nullptr) {}
@@ -330,11 +326,17 @@ namespace ft
 		}
 
 		void assign( size_type count, const T& value )
-		{ swap(vector(count, value, _alloc)); }
+		{
+            vector new_vector(count, value, _alloc);
+            swap(new_vector);
+        }
 
 		template< class InputIt >
 		void assign( InputIt first, InputIt last )
-		{ swap(vector(first, last, _alloc)); }
+		{
+            vector new_vector(first, last, _alloc);
+            swap(new_vector);
+        }
 
 		allocator_type get_allocator() const
 		{ return _alloc; }
@@ -507,8 +509,8 @@ namespace ft
 		void insert( iterator pos, InputIt first,
 					 typename ft::enable_if<!ft::is_integral<InputIt>::value, InputIt>::type last )
 		{
-			_insert_iterator_impl(pos, first, last,
-								typename ft::iterator_traits<InputIt>::iterator_category());
+			_insert_iter_impl(pos, first, last,
+                                typename ft::iterator_traits<InputIt>::iterator_category());
 		}
 
 		template< class Integral >
@@ -610,10 +612,10 @@ friend 	bool operator> (const vector& lhs, const vector& rhs )
 		{ return rhs < lhs; }
 
 friend 	bool operator<=(const vector& lhs, const vector& rhs )
-		{ return !(rhs > lhs); }
+		{ return !(lhs > rhs); }
 
 friend 	bool operator>=(const vector& lhs, const vector& rhs )
-		{ return !(rhs < lhs); }
+		{ return !(lhs < rhs); }
 	};
 
 };
@@ -621,8 +623,8 @@ friend 	bool operator>=(const vector& lhs, const vector& rhs )
 namespace std
 {
 	template< class T, class Alloc >
-	void swap( std::vector<T,Alloc>& lhs,
-			   std::vector<T,Alloc>& rhs )
+	void swap( ft::vector<T,Alloc>& lhs,
+               ft::vector<T,Alloc>& rhs )
 	{ lhs.swap(rhs); }
 };
 

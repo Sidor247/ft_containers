@@ -205,7 +205,7 @@ namespace ft
         typedef	typename ft::iterator_traits<Iter>::pointer 			pointer;
         typedef	typename ft::iterator_traits<Iter>::reference 			reference;
 
-        reverse_iterator(): current(iterator_type()) {}
+        reverse_iterator(): current() {}
         explicit	reverse_iterator(iterator_type it): current(it) {}
         reverse_iterator(const reverse_iterator& rev_it): current(rev_it.current) {}
 
