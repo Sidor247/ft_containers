@@ -384,7 +384,7 @@ namespace ft
 		typedef typename Allocator::template rebind<_node>::other	_node_alloc_type;
 
 		value_compare		_val_comp;
-		Allocator			_alloc;
+		allocator_type		_alloc;
 		_node_alloc_type 	_node_alloc;
 		size_type 			_size;
         _node               _end;
@@ -433,6 +433,8 @@ namespace ft
                     while (_ptr == tmp->right) {
                         _ptr = tmp;
                         tmp = tmp->parent;
+						if (!tmp)
+							return *this;
                     }
                     _ptr = tmp;
                 }
@@ -456,6 +458,8 @@ namespace ft
                     while (_ptr == tmp->left) {
                         _ptr = tmp;
                         tmp = tmp->parent;
+						if (!tmp)
+							return *this;
                     }
                     _ptr = tmp;
                 }
@@ -546,7 +550,7 @@ namespace ft
             _node* parent = nullptr;
 
             if (root->is_nil())
-                return root;
+                return _node::nil();
             while (!ptr->is_nil())
             {
                 parent = ptr;
@@ -599,7 +603,7 @@ namespace ft
 					  const Allocator& alloc = Allocator() ):
 					  _val_comp(comp),
 					  _alloc(alloc),
-					  _node_alloc(alloc),
+					  _node_alloc(),
 					  _size(),
                       _end(),
                       _root(_node::nil()),
@@ -628,7 +632,11 @@ namespace ft
             _end(),
 			_root(_alloc_and_copy(&_end, other._root)),
 			_first(_root->advanced_left()),
-			_last(_root->advanced_right()) {}
+			_last(_root->advanced_right())
+		{
+			_end.left = _root;
+			_end.right = _root;
+		}
 
 	 	~map()
 		 { _destroy_and_dealloc(_root); }
@@ -739,10 +747,10 @@ namespace ft
 		iterator insert(iterator hint, const value_type& value)
 		{
             _node* pos = _find(hint._ptr, value.first);
-            if (pos != &_end && !_val_comp(*pos->value, value) && !_val_comp(value, *pos->value))
+            if (!pos->is_nil() && !_val_comp(*pos->value, value) && !_val_comp(value, *pos->value))
                 return iterator(pos);
-            _node* new_node = _alloc_and_init_node(pos, true, value);
-            if (pos != &_end)
+            _node* new_node = _alloc_and_init_node(pos->is_nil() ? &_end : pos, true, value);
+            if (!pos->is_nil())
             {
                 if (_val_comp(value, *pos->value))
                     pos->left = new_node;
@@ -807,6 +815,9 @@ namespace ft
         //?
 		void swap( map& other )
         {
+			_node* tmp = _root;
+			_update_root(other._root);
+			other._update_root(tmp);
             std::swap(_val_comp, other._val_comp);
             std::swap(_alloc, other._alloc);
             std::swap(_node_alloc, other._node_alloc);
@@ -822,8 +833,9 @@ namespace ft
 		iterator find( const Key& key )
 		{
             _node* ptr = _find(key, _root);
-            if (ptr && !_val_comp.comp(ptr->value->first, key)
-                    && !_val_comp.comp(key, ptr->value->first))
+            if (!ptr->is_nil() &&
+				!_val_comp.comp(ptr->value->first, key) &&
+				!_val_comp.comp(key, ptr->value->first))
                 return iterator(ptr);
             else
 			    return end();
@@ -832,8 +844,9 @@ namespace ft
 		const_iterator find( const Key& key ) const
 		{
             _node* ptr = _find(key);
-            if (ptr && !_val_comp.comp(ptr->value->first, key)
-                && !_val_comp.comp(key, ptr->value->first))
+            if (!ptr->is_nil() &&
+				!_val_comp.comp(ptr->value->first, key) &&
+				!_val_comp.comp(key, ptr->value->first))
                 return const_iterator(ptr);
             else
                 return end();

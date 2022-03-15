@@ -325,11 +325,11 @@ int	main()
 	ft::map<int, int> map;
 	for (int i = 0; i < 7; ++i)
 	{
-//		int num = rand() % 100;
-		v.push_back(ft::make_pair(i, i));
+		int num = rand() % 100;
+		v.push_back(ft::make_pair(num, num));
 	}
     map.insert(v.begin(), v.end());
-    map.erase(3);
+//    map.erase(44);
 	ft::map<int, int> map2 = map;
 	ft::map<int, int>::iterator it = map2.begin();
     for (; it != map2.end(); ++it)
