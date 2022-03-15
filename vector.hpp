@@ -35,6 +35,7 @@ namespace ft
 		class _common_iterator
 		{
 		public:
+            typedef _common_iterator                                        iterator_type;
             typedef std::random_access_iterator_tag	                        iterator_category;
             typedef	T		                                                value_type;
             typedef	std::ptrdiff_t		                                    difference_type;
@@ -111,7 +112,7 @@ namespace ft
 				return copy -= rhs;
 			}
 
-			operator _common_iterator<true>()
+			operator _common_iterator<true>() const
 			{ return _common_iterator<true>(_ptr); }
 
 	friend	bool operator==(const _common_iterator& lhs, const _common_iterator& rhs)

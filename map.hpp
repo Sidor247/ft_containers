@@ -397,7 +397,9 @@ namespace ft
 		{
             friend class map;
 
-            _node* _ptr;
+            typedef typename ft::conditional<IsConst, const _node*, _node*>::type node_pointer;
+
+            node_pointer    _ptr;
 
 		public:
             typedef std::bidirectional_iterator_tag	                                    iterator_category;
@@ -407,7 +409,7 @@ namespace ft
             typedef	typename ft::conditional<IsConst, const_reference, reference>::type reference;
 
 			_common_iterator(): _ptr(nullptr) {}
-			_common_iterator(_node* ptr): _ptr(ptr) {}
+			_common_iterator(node_pointer ptr): _ptr(ptr) {}
 			_common_iterator(const _common_iterator& src): _ptr(src._ptr) {}
 
 			_common_iterator&	operator=(const _common_iterator& src)
@@ -429,7 +431,7 @@ namespace ft
                 if (_ptr->right != _node::nil())
                     _ptr = _ptr->right->advanced_left();
                 else {
-                    _node *tmp = _ptr->parent;
+                    node_pointer tmp = _ptr->parent;
                     while (_ptr == tmp->right) {
                         _ptr = tmp;
                         tmp = tmp->parent;
@@ -454,7 +456,7 @@ namespace ft
                     _ptr = _ptr->left->advanced_right();
                 else
                 {
-                    _node *tmp = _ptr->parent;
+                    node_pointer tmp = _ptr->parent;
                     while (_ptr == tmp->left) {
                         _ptr = tmp;
                         tmp = tmp->parent;
@@ -473,7 +475,7 @@ namespace ft
 				return copy;
 			}
 
-			operator _common_iterator<true>()
+			operator _common_iterator<true>() const
 			{ return _common_iterator<true>(_ptr); }
 
 			friend	bool operator==(const _common_iterator& lhs, const _common_iterator& rhs)
@@ -570,17 +572,23 @@ namespace ft
         _node*  _find(_node* hint, const key_type& key) const
         {
             _node* ptr = hint;
-            _node* parent = nullptr;
+            _node* parent = ptr;
 
-            while (ptr->parent != &_end)
+            if (_val_comp.comp(ptr->value->first, key))
             {
-                parent = ptr->parent;
-                if ((_val_comp.comp(parent->value->first, key) && ptr == parent->right)
-                ||  (_val_comp.comp(key, parent->value->first) && ptr == parent->left))
-                { break; }
-                ptr = parent;
+                while (parent->parent != &_end && parent != parent->parent->left)
+                    parent = parent->parent;
+                if (_val_comp.comp(key, parent->value->first))
+                    return _find(key, ptr);
             }
-            return _find(key, ptr);
+            else
+            {
+                while (parent->parent != &_end && parent != parent->parent->right)
+                    parent = parent->parent;
+                if (_val_comp.comp(parent->value->first, key))
+                    return _find(key, ptr);
+            }
+            return _find(key, _root);
         }
 
 	public:
@@ -771,7 +779,7 @@ namespace ft
 		{
             if (first == last)
                 return;
-            iterator hint = insert(*++first).first;
+            iterator hint = insert(*first++).first;
             for (InputIterator it = first; it != last; ++it)
                 hint = insert(hint, *it);
 		}
@@ -898,19 +906,21 @@ namespace ft
 
 		iterator upper_bound( const Key& key )
 		{
-			_node* tmp = _root;
-			_node* prev = nullptr;
-			while (tmp != _node::nil())
-			{
-				if (_val_comp.comp(key, tmp->value->first))
-				{
-					prev = tmp;
-					tmp = tmp->left;
-				}
-				else
-					tmp = tmp->right;
-			}
-			return prev && _val_comp.comp(key, prev->value->first) ? iterator(prev) : end();
+            _node* tmp = _root;
+            _node* prev = nullptr;
+            while (tmp != _node::nil())
+            {
+                if (key == tmp->value->first)
+                    return iterator(tmp);
+                if (_val_comp.comp(key, tmp->value->first))
+                {
+                    prev = tmp;
+                    tmp = tmp->left;
+                }
+                else
+                    tmp = tmp->right;
+            }
+            return prev && !_val_comp.comp(key, prev->value->first) ? iterator(prev) : end();
 		}
 
 		const_iterator upper_bound( const Key& key ) const
