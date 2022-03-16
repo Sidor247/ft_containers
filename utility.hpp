@@ -153,53 +153,52 @@ namespace ft
             second = other.second;
             return *this;
         }
-
-        friend	bool operator==( const pair& lhs, const pair& rhs )
-        { return lhs.first == rhs.first && lhs.second == rhs.second; }
-
-        friend	bool operator!=( const pair& lhs, const pair& rhs )
-        { return !(lhs == rhs); }
-
-        friend	bool operator<( const pair& lhs, const pair& rhs )
-        {
-            if (lhs.first < rhs.first)
-                return true;
-            else if (lhs.first < rhs.first)
-                return false;
-            if (lhs.second < rhs.second)
-                return true;
-            else
-                return false;
-        }
-
-        friend	bool operator<=( const pair& lhs, const pair& rhs )
-        { return !(rhs < lhs); }
-
-        friend	bool operator>( const pair& lhs, const pair& rhs )
-        { return rhs < lhs; }
-
-        friend	bool operator>=( const pair& lhs, const pair& rhs )
-        { return !(lhs < rhs); }
     };
+
+    template <class T1, class T2>
+    bool operator== (const pair<T1,T2>& lhs, const pair<T1,T2>& rhs)
+    { return lhs.first == rhs.first && lhs.second == rhs.second; }
+
+    template <class T1, class T2>
+    bool operator!= (const pair<T1,T2>& lhs, const pair<T1,T2>& rhs)
+    { return !(lhs==rhs); }
+
+    template <class T1, class T2>
+    bool operator<  (const pair<T1,T2>& lhs, const pair<T1,T2>& rhs)
+    { return lhs.first < rhs.first || (!(rhs.first < lhs.first) && lhs.second < rhs.second); }
+
+    template <class T1, class T2>
+    bool operator<= (const pair<T1,T2>& lhs, const pair<T1,T2>& rhs)
+    { return !(rhs < lhs); }
+
+    template <class T1, class T2>
+    bool operator>  (const pair<T1,T2>& lhs, const pair<T1,T2>& rhs)
+    { return rhs < lhs; }
+
+    template <class T1, class T2>
+    bool operator>= (const pair<T1,T2>& lhs, const pair<T1,T2>& rhs)
+    { return !(lhs < rhs); }
 
     template< class T1, class T2 >
     pair<T1,T2> make_pair( T1 t, T2 u )
     { return pair<T1, T2>(t, u); }
 
-    template< class Iter >
+    template< class Iterator >
     class reverse_iterator
     {
     public:
-        typedef Iter 													iterator_type;
-        typedef typename ft::iterator_traits<Iter>::iterator_category	iterator_category;
-        typedef	typename ft::iterator_traits<Iter>::value_type			value_type;
-        typedef	typename ft::iterator_traits<Iter>::difference_type		difference_type;
-        typedef	typename ft::iterator_traits<Iter>::pointer 			pointer;
-        typedef	typename ft::iterator_traits<Iter>::reference 			reference;
+        typedef Iterator 													iterator_type;
+        typedef typename ft::iterator_traits<Iterator>::iterator_category	iterator_category;
+        typedef	typename ft::iterator_traits<Iterator>::value_type			value_type;
+        typedef	typename ft::iterator_traits<Iterator>::difference_type		difference_type;
+        typedef	typename ft::iterator_traits<Iterator>::pointer 			pointer;
+        typedef	typename ft::iterator_traits<Iterator>::reference 			reference;
 
         reverse_iterator(): current() {}
         explicit	reverse_iterator(iterator_type it): current(it) {}
-        reverse_iterator(const reverse_iterator& rev_it): current(rev_it.current) {}
+
+        template <class Iter>
+        reverse_iterator (const reverse_iterator<Iter>& rev_it): current(rev_it.base()) {}
 
         iterator_type base() const
         { return current; }
@@ -255,28 +254,34 @@ namespace ft
         reverse_iterator operator-(difference_type n) const
         { return reverse_iterator(current + n); }
 
-        friend	bool operator==	(const reverse_iterator& lhs,
-                                      const reverse_iterator& rhs)
+        template <class Iter1, class Iter2>
+        friend	bool operator==(const reverse_iterator<Iter1>& lhs,
+                                const reverse_iterator<Iter2>& rhs)
         { return lhs.current == rhs.current; }
 
-        friend	bool operator!=	(const reverse_iterator& lhs,
-                                      const reverse_iterator& rhs)
+        template <class Iter1, class Iter2>
+        friend	bool operator!=(const reverse_iterator<Iter1>& lhs,
+                                const reverse_iterator<Iter2>& rhs)
         { return lhs.current != rhs.current; }
 
-        friend	bool operator<	(const reverse_iterator& lhs,
-                                     const reverse_iterator& rhs)
+        template <class Iter1, class Iter2>
+        friend	bool operator< (const reverse_iterator<Iter1>& lhs,
+                                const reverse_iterator<Iter2>& rhs)
         { return lhs.current > rhs.current; }
 
-        friend	bool operator<=	(const reverse_iterator& lhs,
-                                      const reverse_iterator& rhs)
+        template <class Iter1, class Iter2>
+        friend	bool operator<=(const reverse_iterator<Iter1>& lhs,
+                                const reverse_iterator<Iter2>& rhs)
         { return lhs.current >= rhs.current; }
 
-        friend	bool operator>	(const reverse_iterator& lhs,
-                                     const reverse_iterator& rhs)
+        template <class Iter1, class Iter2>
+        friend	bool operator> (const reverse_iterator<Iter1>& lhs,
+                                const reverse_iterator<Iter2>& rhs)
         { return lhs.current < rhs.current; }
 
-        friend	bool operator>=	(const reverse_iterator& lhs,
-                                      const reverse_iterator& rhs)
+        template <class Iter1, class Iter2>
+        friend	bool operator>=(const reverse_iterator<Iter1>& lhs,
+                                const reverse_iterator<Iter2>& rhs)
         { return lhs.current <= rhs.current; }
 
         friend	reverse_iterator	operator+(difference_type lhs, reverse_iterator rhs)

@@ -138,86 +138,6 @@
 #include <list>
 #include <map>
 
-//template<typename Integral>
-//void f(Integral val, typename ft::enable_if<ft::is_integral<Integral>::value>::type* = 0)
-//{
-//	(void)val;
-//	std::cout << 1 << std::endl;
-//};
-//
-//template<class T>
-//void f(T val, typename ft::enable_if<!ft::is_integral<T>::value>::type* = 0)
-//{
-//	(void)val;
-//	std::cout << 2 << std::endl;
-//}
-//
-//struct A
-//{
-//	size_t i;
-//
-//	A(size_t i): i(i) {}
-//	A(const A& src): i(src.i)
-//	{
-//		if (i == 10)
-//			throw std::exception();
-//	}
-//};
-
-//struct B
-//{
-//	~B()
-//	{ std::cout << "Destuctor" << std::endl; }
-//};
-
-//struct node
-//{
-//	bool		is_red;
-//	node*		parent;
-//	node*		left;
-//	node*		right;
-//	std::string key;
-//
-//	node(): is_red(false), parent(nullptr), left(nullptr), right(nullptr), key(std::string()) {};
-//
-//	bool is_nil(const _node& node)
-//	{ return !(node.is_red || node.parent || node.left || node.right || node.right); }
-//};
-//
-//struct tree
-//{
-//	node	*root;
-//
-//	tree(): root(new node());
-//
-//	node*	find(const std::string& key)
-//	{
-//		node* tmp = root;
-//		while (!tmp->is_nil())
-//		{
-//			if (key == tmp->key)
-//				return &tmp;
-//			if (key < tmp->key)
-//				tmp = tmp->left;
-//			else
-//				tmp = tmp->right;
-//		}
-//		return tmp;
-//	}
-//
-//	void insert(std::string key)
-//	{
-//		node* place = find(key);
-//		if (!place->is_nil())
-//			return;
-//
-//
-//
-//	}
-//
-//
-//};
-
 int	main()
 {
 //	node root;
@@ -329,9 +249,8 @@ int	main()
 		v.push_back(ft::make_pair(num, num));
 	}
     map.insert(v.begin(), v.end());
-//    map.erase(44);
+    map.erase(44);
     ft::map<int, int> map2 = map;
-    std::vector<int>::iterator::iterator_type type;
 	ft::map<int, int>::iterator it = map2.begin();
     it = map2.upper_bound(3);
     it = map2.begin();
@@ -348,49 +267,8 @@ int	main()
     std::cout << std::endl;
     for (ft::map<int, int>::const_reverse_iterator it1 = map2.rbegin(); it1 != map2.rend(); ++it1)
         std::cout << it1->first << ' ' << it1->second << std::endl;
+    std::map<int, int>::const_reverse_iterator rev_cit;
+    std::map<int, int>::reverse_iterator rev_it;
 	return 0;
 }
 
-//findNumbers() {
-//	cv::UMat sourseImage;
-//	cv::UMat gray; cv::cvtColor(sourseImage, gray, CV_BGR2GRAY);
-//	equalizeHist(gray, gray);
-//	bilateralFilter(gray, gray, 3, 45, 45);
-//	std::vector<cv::Rect> plates;
-//	//Нахождение областей номеров с помощью каскада Хаара
-//	 cascadePlate.detectMultiScale(gray, plates,1.1,10,CV_HAAR_DO_CANNY_PRUN ING,cv::Size(50, 15), cv::Size(500, 150));
-//	for(auto& p : plates) {
-////выделение части изображения с номером
-//		findLetters(imagePart);
-//	}
-//}
-//findLetters(imagePart)
-//{
-////применение фильтров для улучшения качества изображения
-//		cv::UMat cannyOutput, smothed, srcThreshold;
-//		auto clahe = cv::createCLAHE(2.0, cv::Size(8, 8)); clahe->apply(imagePart, imagePart);
-//		threshold(imagePart,srcThreshold,0,255,CV_THRESH_BINARY,CV_THRESH_OTSU);
-//		medianBlur(srcThreshold, srcThreshold, 3);
-//		cv::blur(srcThreshold, srcThreshold, cv::Size(3,3));
-//		cv::Canny(srcThreshold, cannyOutput, 66, 133, 3);
-//		std::vector<std::vector<cv::Point>> rectContours;
-//		cv::findContours(cannyOutput, rectContours, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE); //сортировка контуров по размеру
-//		std::sort(rectContours.begin(),
-//		std::vector<cv::Point> &second)
-//		{
-//			return cv::contourArea(first) >
-//				   cv::contourArea(second); });
-//// вычисление угла angle на который повернута область номера
-//		(rectContours[0])
-//		...
-//		rotateImage(srcThreshold, angle); cv::Canny(srcThreshold, cannyOutput, 66,
-//		133, 3); cv::findContours(cannyOutput,
-//		rectContours, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE);
-//		for(auto& c : contours)
-//		{
-////если размер области соответствует
-//			размеру номера, то применить распознавание символа в области c помощью TesseractOCR recognizeChar(charPart);
-//		}}
-//rectContours.end(),
-//[](std::vector<cv::Point>
-//		&first,
