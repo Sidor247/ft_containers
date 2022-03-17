@@ -241,7 +241,7 @@ namespace ft
 
         reverse_iterator  operator--(int)
         {
-            reverse_iterator copy(current--);
+            reverse_iterator copy(current++);
             return copy;
         }
 

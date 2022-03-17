@@ -140,9 +140,6 @@
 
 int	main()
 {
-//	node root;
-//	root.is_red = false;
-	
 	// ft::vector<int> v1(3u, 4);
 	// ft::vector<int> v2(2u, 7);
 	// std::cout << v1.size() << std::endl;
@@ -241,34 +238,40 @@ int	main()
 //    v.push_back(ft::pair<int, int>(1, 1));
 //    for (ft::vector<ft::pair<int, int> >::reverse_iterator it = v.rbegin(); it != v.rend(); ++it)
 //        std::cout << it->first << std::endl;
-    ft::vector< const ft::pair<const int,int> > v;
-	ft::map<int, int> map;
-	for (int i = 0; i < 10; ++i)
-	{
-		int num = rand() % 100;
-		v.push_back(ft::make_pair(num, num));
-	}
-    map.insert(v.begin(), v.end());
-    map.erase(44);
-    ft::map<int, int> map2 = map;
-	ft::map<int, int>::iterator it = map2.begin();
-    it = map2.upper_bound(3);
-    it = map2.begin();
-    for (; it != map2.end(); ++it)
-        std::cout << it->first << ' ' << it->second << std::endl;
-    std::cout << std::endl;
-	--it;
-	for (; it != map2.begin(); --it)
-		std::cout << it->first << ' ' << it->second << std::endl;
-	std::cout << it->first << ' ' << it->second << std::endl;
-	std::cout << std::endl;
-	for (; it != map2.end(); ++it)
-		std::cout << it->first << ' ' << it->second << std::endl;
-    std::cout << std::endl;
-    for (ft::map<int, int>::const_reverse_iterator it1 = map2.rbegin(); it1 != map2.rend(); ++it1)
-        std::cout << it1->first << ' ' << it1->second << std::endl;
-    std::map<int, int>::const_reverse_iterator rev_cit;
-    std::map<int, int>::reverse_iterator rev_it;
+//    ft::vector<std::pair<int,int> > v;
+//    std::map<int, int> map;
+//	for (int i = 0; i < 10; ++i)
+//	{
+//		int num = rand() % 100;
+//		v.push_back(std::make_pair(num, num));
+//	}
+//    map.insert(v.begin(), v.end());
+//    map.erase(7);
+//    std::map<int, int> map2 = map;
+//    std::swap(map, map2);
+//    std::map<int, int>::iterator it = map2.begin();
+//    it = map2.upper_bound(3);
+//    it = map2.begin();
+//    for (; it != map2.end(); ++it)
+//        std::cout << it->first << ' ' << it->second << std::endl;
+//    std::cout << std::endl;
+//	--it;
+//	for (; it != map2.begin(); --it)
+//		std::cout << it->first << ' ' << it->second << std::endl;
+//	std::cout << it->first << ' ' << it->second << std::endl;
+//	std::cout << std::endl;
+//	for (; it != map2.end(); ++it)
+//		std::cout << it->first << ' ' << it->second << std::endl;
+//    std::cout << std::endl;
+//    std::map<int, int>::const_reverse_iterator it1 = map2.rbegin();
+//    for (; it1 != map2.rend(); ++it1)
+//        std::cout << it1->first << ' ' << it1->second << std::endl;
+//    std::cout << std::endl;
+//    --it1;
+//    for (; it1 != map2.rbegin(); --it)
+//        std::cout << it1->first << ' ' << it1->second << std::endl;
+//    std::cout << it1->first << ' ' << it1->second << std::endl;
+
 	return 0;
 }
 

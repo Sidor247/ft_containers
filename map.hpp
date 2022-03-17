@@ -182,8 +182,8 @@ namespace ft
             if (root->right == leaf)
             {
                 leaf->parent = root->parent;
+                root->right = leaf->right;
                 leaf->right = root;
-                root->right = node_type::nil();
             }
             else
             {
@@ -487,11 +487,12 @@ namespace ft
 			_destroy_and_dealloc(_root);
 			_val_comp = other._val_comp.comp;
 			_alloc = other._alloc;
-            _node_alloc = other.node_type_alloc;
+            _node_alloc = other._node_alloc;
 			_size = other._size;
             _update_root(new_tree);
 			_first = _root->advanced_left();
 			_last = _root->advanced_right();
+            return *this;
 		}
 
 		allocator_type get_allocator() const
@@ -499,7 +500,7 @@ namespace ft
 
 		T& at( const Key& key )
 		{
-			const_iterator it = find(key);
+            iterator it = find(key);
 			if (it == end())
 				throw std::out_of_range("out_of_range");
 			return it->second;
@@ -507,7 +508,7 @@ namespace ft
 
 		const T& at( const Key& key ) const
 		{
-			iterator it = find(key);
+            const_iterator it = find(key);
 			if (it == end())
 				throw std::out_of_range("out_of_range");
 			return it->second;
@@ -554,7 +555,7 @@ namespace ft
 			_destroy_and_dealloc(_root);
             _end.left = nullptr;
             _end.right = nullptr;
-			_root = &_end;
+			_root = node_type::nil();
             _first = &_end;
             _last = &_end;
 			_size = 0;
@@ -650,12 +651,13 @@ namespace ft
             return 1;
         }
 
-        //?
 		void swap( map& other )
         {
 			node_type* tmp = _root;
 			_update_root(other._root);
 			other._update_root(tmp);
+            _root->parent = &_end;
+            other._root->parent = &other._end;
             std::swap(_val_comp, other._val_comp);
             std::swap(_alloc, other._alloc);
             std::swap(_node_alloc, other._node_alloc);
