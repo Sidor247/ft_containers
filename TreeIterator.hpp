@@ -21,6 +21,7 @@ namespace ft {
         typedef std::ptrdiff_t                                                          difference_type;
         typedef typename ft::conditional<IsConst, const value_type*, value_type*>::type pointer;
         typedef typename ft::conditional<IsConst, const value_type&, value_type&>::type reference;
+		typedef pointer 			                                    				iterator_type;
 
         TreeIterator() : _ptr(nullptr) {}
 

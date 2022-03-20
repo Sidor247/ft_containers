@@ -50,12 +50,6 @@ namespace ft
 		};
 
 	private:
-//        template<bool IsConst>
-//        struct _ptr_unpacker : TreeIterator<node_type, IsConst>
-//        {
-//
-//        };
-
         void _update_root(node_type* root)
         {
             _root = root;

@@ -25,8 +25,6 @@ namespace ft
 
 		stack( const stack& other ): c(other.c) {}
 
-		~stack() {}
-
 		stack& operator=( const stack& other )
 		{
 			if (&other == this)

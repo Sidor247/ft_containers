@@ -364,6 +364,37 @@ std::vector<int> resize_test(ft::vector<T> vector) {
 	return v;
 }
 
+bool iterator_traits_test() {
+	std::vector<std::string> res;
+	std::vector<std::string> res2;
+
+	res.push_back(typeid(std::vector<int>::iterator::iterator_category).name());
+	res.push_back(typeid(std::vector<int>::iterator::value_type).name());
+	res.push_back(typeid(std::vector<int>::iterator::difference_type).name());
+	res.push_back(typeid(std::vector<int>::iterator::iterator_type).name());
+	res.push_back(typeid(std::vector<int>::iterator::pointer).name());
+	res.push_back(typeid(std::vector<int>::iterator::reference).name());
+	res.push_back(typeid(std::vector<int>::reverse_iterator::iterator_category).name());
+	res.push_back(typeid(std::vector<int>::reverse_iterator::value_type).name());
+	res.push_back(typeid(std::vector<int>::reverse_iterator::difference_type).name());
+	res.push_back(typeid(std::vector<int>::reverse_iterator::pointer).name());
+	res.push_back(typeid(std::vector<int>::reverse_iterator::reference).name());
+
+	res2.push_back(typeid(ft::vector<int>::iterator::iterator_category).name());
+	res2.push_back(typeid(ft::vector<int>::iterator::value_type).name());
+	res2.push_back(typeid(ft::vector<int>::iterator::difference_type).name());
+	res2.push_back(typeid(ft::vector<int>::iterator::iterator_type).name());
+	res2.push_back(typeid(ft::vector<int>::iterator::pointer).name());
+	res2.push_back(typeid(ft::vector<int>::iterator::reference).name());
+	res2.push_back(typeid(ft::vector<int>::reverse_iterator::iterator_category).name());
+	res2.push_back(typeid(ft::vector<int>::reverse_iterator::value_type).name());
+	res2.push_back(typeid(ft::vector<int>::reverse_iterator::difference_type).name());
+	res2.push_back(typeid(ft::vector<int>::reverse_iterator::pointer).name());
+	res2.push_back(typeid(ft::vector<int>::reverse_iterator::reference).name());
+
+	return res == res2;
+}
+
 int	main()
 {
 //    mp3.insert(ft::make_pair(7, 3));
@@ -515,6 +546,7 @@ int	main()
 //    map.erase(1);
 //    for (int i = 0; i < 30; ++i)
 //        map.insert(ft::make_pair(i, i));
+	iterator_traits_test();
     std::vector<int> v, v1;
 	ft::vector<int> v2;
 	v = resize_test(v1);

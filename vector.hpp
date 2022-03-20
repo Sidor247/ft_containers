@@ -35,12 +35,12 @@ namespace ft
 		class _common_iterator
 		{
 		public:
-            typedef _common_iterator                                        iterator_type;
             typedef std::random_access_iterator_tag	                        iterator_category;
             typedef	T		                                                value_type;
             typedef	std::ptrdiff_t		                                    difference_type;
             typedef	typename ft::conditional<IsConst, const T*, T*>::type   pointer;
             typedef	typename ft::conditional<IsConst, const T&, T&>::type   reference;
+			typedef pointer 			                                    iterator_type;
 
 			_common_iterator(): _ptr(nullptr) {}
 			_common_iterator(pointer ptr): _ptr(ptr) {}
