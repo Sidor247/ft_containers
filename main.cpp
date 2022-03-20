@@ -138,8 +138,242 @@
 #include <list>
 #include <map>
 
+template <class T, class V>
+std::vector<int> comparator_test(ft::map<T, V> mp) {
+    std::vector<int> v;
+    fillMap(mp);
+//    for (typename ft::map<T, V>::iterator it = mp.begin(); it != mp.end(); it++) { v.push_back(it->first); }
+//    for (typename ft::map<T, V>::iterator it = --mp.end(); it != mp.begin(); it--) { v.push_back(it->first); }
+//    ft::map<int, int, std::greater<int> > mp1;
+//    fillMap(mp1);
+//    v.push_back(mp1.begin()->first);
+//    mp1.erase(41);
+//    v.push_back(mp1.begin()->first);
+//    mp1.erase(29);
+//    v.push_back(mp1.begin()->first);
+//    ft::map<int, int, std::greater<int> > mp2;
+//    mp2.insert(ft::make_pair(3, 3));
+//    v.push_back(mp2.begin()->first);
+//    mp2.erase(3);
+//    if (mp2.begin() == mp2.end())
+//        v.push_back(1);
+//    ft::map<int, int, std::plus<int> > mp3;
+//    fillMap(mp3);
+//    for (typename ft::map<T, V>::iterator it = mp3.begin(); it != mp3.end(); it++) { v.push_back(it->first); }
+//    for (typename ft::map<T, V>::iterator it = --mp3.end(); it != mp3.begin(); it--) { v.push_back(it->first); }
+//    ft::map<int, int, std::minus<int> > mp4;
+//    fillMap(mp4);
+//    for (typename ft::map<T, V>::iterator it = mp4.begin(); it != mp4.end(); it++) { v.push_back(it->first); }
+//    for (typename ft::map<T, V>::iterator it = --mp4.end(); it != mp4.begin(); it--) { v.push_back(it->first); }
+//    ft::map<int, int, std::greater_equal<int> > mp5;
+//    fillMap(mp5);
+//    for (typename ft::map<T, V>::iterator it = mp5.begin(); it != mp5.end(); it++) { v.push_back(it->first); }
+//    for (typename ft::map<T, V>::iterator it = --mp5.end(); it != mp5.begin(); it--) { v.push_back(it->first); }
+//    ft::map<int, int, std::multiplies<int> > mp6;
+//    fillMap(mp6);
+//    for (typename ft::map<T, V>::iterator it = mp6.begin(); it != mp6.end(); it++) { v.push_back(it->first); }
+//    for (typename ft::map<T, V>::iterator it = --mp6.end(); it != mp6.begin(); it--) { v.push_back(it->first); }
+//    ft::map<int, int, std::bit_xor<int> > mp7;
+//    fillMap(mp7);
+//    for (typename ft::map<T, V>::iterator it = mp7.begin(); it != mp7.end(); it++) { v.push_back(it->first); }
+//    for (typename ft::map<T, V>::iterator it = --mp7.end(); it != mp7.begin(); it--) { v.push_back(it->first); }
+//    ft::map<int, int, std::logical_and<int> > mp8;
+//    fillMap(mp8);
+//    for (typename ft::map<T, V>::iterator it = mp8.begin(); it != mp8.end(); it++) { v.push_back(it->first); }
+//    for (typename ft::map<T, V>::iterator it = --mp8.end(); it != mp8.begin(); it--) { v.push_back(it->first); }
+//    v.push_back(mp1.size());
+
+    return v;
+}
+
+class B {
+public:
+	char *l;
+	int i;
+	B():l(nullptr), i(1) {};
+	B(const int &ex) {
+		this->i = ex;
+		this->l = new char('a');
+	};
+	virtual ~B() {
+		delete this->l;
+		this->l = nullptr;
+	};
+};
+
+class A : public B {
+public:
+	A():B(){};
+	A(const B* ex){
+		this->l = new char(*(ex->l));
+		this->i = ex->i;
+		if (ex->i == -1) throw "n";
+	}
+	~A() {
+		delete this->l;
+		this->l = nullptr;
+	};
+};
+
+int _ratio = 1;
+
+template <typename T>
+std::vector<int> insert_test_1(std::vector<T> vector) {
+	std::vector<int> v;
+	vector.assign(2600 * _ratio, 1);
+	v.push_back(*(vector.insert(vector.end() - 800 * _ratio, 44)));
+	v.push_back(vector.size());
+	v.push_back(vector.capacity());
+	std::unique_ptr<B> k2(new B(3));
+	std::unique_ptr<B> k3(new B(4));
+	std::unique_ptr<B> k4(new B(-1));
+	std::vector<A> vv;
+	std::vector<B*> v1;
+
+	v1.push_back(&(*k2));
+	v1.push_back(&(*k3));
+	v1.push_back(&(*k4));
+	try { vv.insert(vv.begin(), v1.begin(), v1.end()); }
+	catch (...) {
+		v.push_back(vv.size());
+		v.push_back(vv.capacity());
+	}
+	return v;
+}
+
+template <typename T>
+std::vector<int> insert_test_1(ft::vector<T> vector) {
+	std::vector<int> v;
+	vector.assign(2600 * _ratio, 1);
+	v.push_back(*(vector.insert(vector.end() - 800 * _ratio, 44)));
+	v.push_back(vector.size());
+	v.push_back(vector.capacity());
+	std::unique_ptr<B> k2(new B(3));
+	std::unique_ptr<B> k3(new B(4));
+	std::unique_ptr<B> k4(new B(-1));
+	ft::vector<A> vv;
+	ft::vector<B*> v1;
+
+	v1.push_back(&(*k2));
+	v1.push_back(&(*k3));
+	v1.push_back(&(*k4));
+	try { vv.insert(vv.begin(), v1.begin(), v1.end()); }
+	catch (...) {
+		v.push_back(vv.size());
+		v.push_back(vv.capacity());
+	}
+	return v;
+}
+
+template <typename T>
+std::vector<int> assign_test(std::vector<T> vector) {
+	std::vector<int> v;
+	std::vector<int> tmp, tmp2;
+	vector.assign(3, 3);
+	tmp.assign(4000 * _ratio, 1);
+	tmp2.assign(4 * _ratio, 1);
+	vector.assign(tmp.begin(), tmp.end());
+	v.push_back(vector[1]);
+	v.push_back(vector.size());
+	v.push_back(vector.capacity());
+	vector.assign(tmp2.begin(), tmp2.end());
+	v.push_back(vector[1]);
+	v.push_back(vector.size());
+	v.push_back(vector.capacity());
+	return v;
+}
+
+template <typename T>
+std::vector<int> assign_test(ft::vector<T> vector) {
+	std::vector<int> v;
+	ft::vector<int> tmp, tmp2;
+	vector.assign(3, 3);
+	tmp.assign(4000 * _ratio, 1);
+	tmp2.assign(4 * _ratio, 1);
+	vector.assign(tmp.begin(), tmp.end());
+	v.push_back(vector[1]);
+	v.push_back(vector.size());
+	v.push_back(vector.capacity());
+	vector.assign(tmp2.begin(), tmp2.end());
+	v.push_back(vector[1]);
+	v.push_back(vector.size());
+	v.push_back(vector.capacity());
+	return v;
+}
+
+template <typename T>
+std::vector<int> insert_test_3(std::vector<T> vector) {
+	std::vector<int> v;
+	std::vector<int> tmp;
+	tmp.assign(2600 * _ratio, 1);
+	vector.assign(4200 * _ratio, 1);
+	std::cout << "\t\t" << vector.capacity() << std::endl;
+	vector.insert(vector.end() - 1000 * _ratio, tmp.begin(), tmp.end());
+	v.push_back(vector[3]);
+	v.push_back(vector.size());
+	v.push_back(vector.capacity());
+	return v;
+}
+
+template <typename T>
+std::vector<int> insert_test_3(ft::vector<T> vector) {
+	std::vector<int> v;
+	ft::vector<int> tmp;
+	tmp.assign(2600 * _ratio, 1);
+	vector.assign(4200 * _ratio, 1);
+	vector.insert(vector.end() - 1000 * _ratio, tmp.begin(), tmp.end());
+	v.push_back(vector[3]);
+	v.push_back(vector.size());
+	v.push_back(vector.capacity());
+	return v;
+}
+
+template <typename T>
+std::vector<int> resize_test(std::vector<T> vector) {
+	std::vector<int> v;
+	vector.assign(9900 * _ratio, 1);
+	vector.resize(5000 * _ratio);
+	vector.reserve(5000 * _ratio);
+	v.push_back(vector.size());
+	v.push_back(vector.capacity());
+	vector.resize(7000 * _ratio);
+	v.push_back(vector.size());
+	v.push_back(vector.capacity());
+	vector.resize(15300 * _ratio, T());
+	v.push_back(vector.size());
+	v.push_back(vector.capacity());
+	v.push_back(vector[65]);
+	return v;
+}
+
+template <typename T>
+std::vector<int> resize_test(ft::vector<T> vector) {
+	std::vector<int> v;
+	vector.assign(9900 * _ratio, 1);
+	vector.resize(5000 * _ratio);
+	vector.reserve(5000 * _ratio);
+	v.push_back(vector.size());
+	v.push_back(vector.capacity());
+	vector.resize(7000 * _ratio);
+	v.push_back(vector.size());
+	v.push_back(vector.capacity());
+	vector.resize(15300 * _ratio, T());
+	v.push_back(vector.size());
+	v.push_back(vector.capacity());
+	v.push_back(vector[65]);
+	return v;
+}
+
 int	main()
 {
+//    mp3.insert(ft::make_pair(7, 3));
+//    mp3.insert(ft::make_pair(19, 3));
+//    mp3.insert(ft::make_pair(29, 3));
+//    mp3.insert(ft::make_pair(41, 3));
+//    mp3.insert(ft::make_pair(4, 3));
+//    mp3.insert(ft::make_pair(11, 3));
+//    for (ft::map<int, int, std::plus<int> >::iterator it = mp3.begin(); it != mp3.end(); it++) { v.push_back(it->first); }
+//    for (ft::map<int, int, std::plus<int> >::iterator it = --mp3.end(); it != mp3.begin(); it--) { v.push_back(it->first); }
 	// ft::vector<int> v1(3u, 4);
 	// ft::vector<int> v2(2u, 7);
 	// std::cout << v1.size() << std::endl;
@@ -271,7 +505,32 @@ int	main()
 //    for (; it1 != map2.rbegin(); --it)
 //        std::cout << it1->first << ' ' << it1->second << std::endl;
 //    std::cout << it1->first << ' ' << it1->second << std::endl;
-
+//    ft::map<int, int> mp;
+//    std::vector<int> v;
+//    map.erase(1);
+//    for (int i = 0; i < 30; ++i)
+//        map.insert(ft::make_pair(i, i));
+//    for (ft::map<int, int>::iterator it = map.begin(); it != map.end(); it = map.begin())
+//        map.erase(it->first);
+//    map.erase(1);
+//    for (int i = 0; i < 30; ++i)
+//        map.insert(ft::make_pair(i, i));
+    std::vector<int> v, v1;
+	ft::vector<int> v2;
+	v = resize_test(v1);
+	for (size_t i = 0; i < v.size(); ++i)
+		std::cout << v[i] << std::endl;
+	std::cout << std::endl;
+	v = resize_test(v2);
+	for (size_t i = 0; i < v.size(); ++i)
+		std::cout << v[i] << std::endl;
+//	vector.assign(2600 * _ratio, 1);
+//	std::cout << *vector.insert(vector.end() - 800 * _ratio, 44) << std::endl;
+//    std::cout << tmp2.size() << ' ' << tmp2.capacity() << std::endl;
+//    vector.assign(tmp.begin(), tmp.end());
+//    std::cout << vector[1] << ' ' << vector.size() << ' ' << vector.capacity() << std::endl;
+//    vector.assign(tmp2.begin(), tmp2.end());
+//    std::cout << vector.size() << ' ' << vector.capacity() << std::endl;
 	return 0;
 }
 

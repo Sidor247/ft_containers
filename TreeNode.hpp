@@ -1,6 +1,8 @@
 #ifndef TREENODE_HPP
 #define TREENODE_HPP
 
+#include <__nullptr>
+
 template<typename T>
 struct TreeNode
 {

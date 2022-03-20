@@ -216,7 +216,7 @@ namespace ft
 			difference_type insert_index = pos - begin();
 			size_type count = std::distance(first, last);
 			if (_size + count > _cap)
-				reserve(_size + count);
+				reserve(_size + std::max(_size, count));
 			T* insert_ptr	= _arr + insert_index;
 			T* left_ptr		= _arr + _size;
 			T* right_ptr	= _arr + _size + count - 1;
@@ -235,6 +235,7 @@ namespace ft
 				_destroy_range(_arr, left_ptr);
 				_destroy_range(right_ptr, _arr + _size + count);
 				_basic_exception_handler();
+                throw;
 			}
 			_size += count;
 		}
@@ -317,25 +318,29 @@ namespace ft
 		{
 			if (this == &other)
 				return *this;
-			T* newarr = _alloc_and_copy(other._arr);
+			T* new_arr = _alloc_and_copy(other._arr);
 			_destroy_and_dealloc();
 			_alloc = other._alloc;
 			_size = other._size;
 			_cap = other._cap;
-			_arr = newarr;
+			_arr = new_arr;
 			return *this;
 		}
 
 		void assign( size_type count, const T& value )
 		{
-            vector new_vector(count, value, _alloc);
+            vector new_vector(_alloc);
+            new_vector.reserve(_cap);
+            new_vector.insert(new_vector.begin(), count, value);
             swap(new_vector);
         }
 
 		template< class InputIt >
 		void assign( InputIt first, InputIt last )
 		{
-            vector new_vector(first, last, _alloc);
+            vector new_vector(_alloc);
+            new_vector.reserve(_cap);
+            new_vector.insert(new_vector.begin(), first, last);
             swap(new_vector);
         }
 
@@ -582,7 +587,7 @@ namespace ft
 		void resize( size_type count, T value = T() )
 		{
 			if (count > _cap)
-				reserve(count);
+				reserve(std::max(2 * _cap, count));
 			if (count > _size)
 				for (size_type i = _size; i < count; ++i)
 					_alloc.construct(_arr + i, value);

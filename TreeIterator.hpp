@@ -13,6 +13,7 @@ namespace ft {
 
     public:
         typedef typename ft::conditional<IsConst, const Node*, Node*>::type node_pointer;
+
         node_pointer _ptr;
 
         typedef std::bidirectional_iterator_tag                                         iterator_category;
@@ -90,12 +91,10 @@ namespace ft {
         operator TreeIterator<Node, true>() const
         { return TreeIterator<Node, true>(_ptr); }
 
-        template<typename N, bool B1, bool B2>
-        friend bool operator==(const TreeIterator<N, B1>& lhs, const TreeIterator<N, B2>& rhs)
+        friend bool operator==(const TreeIterator& lhs, const TreeIterator& rhs)
         { return lhs._ptr == rhs._ptr; }
 
-        template<typename N, bool B1, bool B2>
-        friend bool operator!=(const TreeIterator<N, B1>& lhs, const TreeIterator<N, B2>& rhs)
+        friend bool operator!=(const TreeIterator& lhs, const TreeIterator& rhs)
         { return lhs._ptr != rhs._ptr; }
     };
 };

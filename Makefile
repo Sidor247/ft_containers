@@ -1,20 +1,20 @@
 CC=clang++
-CFLAGS=-Wall -Wextra -Werror -std=c++98 -g3 -fsanitize=address -I .
+CFLAGS=-Wall -Wextra -Werror -std=c++98 -fsanitize=address -g -I.
 NAME=tests
-HEADS=vector.hpp map.hpp stack.hpp utility.hpp
-SRCS=main.cpp
-OBJS=$(SRCS:.cpp=.o)
+HEADS=vector.hpp map.hpp stack.hpp utility.hpp TreeIterator.hpp TreeNode.hpp
+SRC=main.cpp
+OBJ=main.o
 
 all: $(NAME)
 
-$(NAME): $(OBJS) $(HEADS)
-	$(CC) $(CFLAGS) $(OBJS) -o $(NAME)
+$(NAME): $(OBJ)
+	$(CC) $(CFLAGS) $(OBJ) -o $(NAME)
 
-%.o: %.cpp
-	$(CC) $(CFLAGS) -c $<
+$(OBJ): $(SRC) $(HEADS)
+	$(CC) $(CFLAGS) -c $(SRC)
 
 clean:
-	rm -rf $(OBJS)
+	rm -rf $(OBJ)
 
 fclean: clean
 	rm -rf $(NAME)
