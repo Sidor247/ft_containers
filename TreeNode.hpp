@@ -15,11 +15,11 @@ struct TreeNode
     value_type* value;
 
     TreeNode():
-            is_red(false),
-            parent(nullptr),
-            left(nullptr),
-            right(nullptr),
-            value(nullptr) {}
+		is_red(false),
+		parent(nullptr),
+		left(nullptr),
+		right(nullptr),
+		value(nullptr) {}
 
     static TreeNode* nil()
     {
@@ -29,6 +29,13 @@ struct TreeNode
 
     bool is_nil()
     { return this == nil(); }
+
+	TreeNode(TreeNode* root):
+		is_red(false),
+		parent(nullptr),
+		left(root),
+		right(root),
+		value(nullptr) {}
 
     TreeNode(TreeNode* parent, bool is_red):
             is_red(is_red),
